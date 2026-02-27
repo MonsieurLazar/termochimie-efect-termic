@@ -1,2 +1,2 @@
 # termochimie-efect-termic
-salata
+
