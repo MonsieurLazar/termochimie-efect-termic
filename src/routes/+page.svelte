@@ -1,4 +1,13 @@
 <h1>Welcome to chimie</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<p>
+  Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a>
+   to read the documentation
+</p>
 <a href="/calculator">Calculator</a>
 <a href="/teorie">Teorie</a>
+
+<style>
+  a {
+    display: block;
+  }
+</style>
