@@ -15,10 +15,14 @@ export const engine = new Engine([
       height: 100,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
-    (thisItem, targetItem) => {
+    (thisItem, targetItem, alert) => {
+      if (thisItem.state.value < 10) {
+        alert("Item 1 has too little value!")
+        return
+      }
       if (targetItem.name === "item2") {
-        targetItem.state.value += 5
-        thisItem.state.value -= 5
+        targetItem.state.value += 10
+        thisItem.state.value -= 10
       }
     },
   ),
@@ -28,7 +32,7 @@ export const engine = new Engine([
       value: 25,
     },
     {
-      x: 10,
+      x: 17.65,
       y: 80,
     },
     {
@@ -36,10 +40,14 @@ export const engine = new Engine([
       height: 25,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
-    (thisItem, targetItem) => {
+    (thisItem, targetItem, alert) => {
+      if (thisItem.state.value < 10) {
+        alert("Item 2 has too little value!")
+        return
+      }
       if (targetItem.name === "item1") {
-        targetItem.state.value += 5
-        thisItem.state.value -= 5
+        targetItem.state.value += 10
+        thisItem.state.value -= 10
       }
     },
   ),

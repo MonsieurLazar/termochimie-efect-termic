@@ -16,7 +16,11 @@ export class Item<T> {
   position: Position = $state({ x: 0, y: 0 })
   dimension: Dimension
   draw: (state: T) => string = () => ""
-  transition: (thisItem: Item<T>, targetItem: Item<any>) => void = () => {}
+  transition: (
+    thisItem: Item<T>,
+    targetItem: Item<any>,
+    alert: (message: string) => void,
+  ) => void = () => {}
   isMoving: boolean = false
 
   redraw = $derived(
@@ -32,7 +36,11 @@ export class Item<T> {
     position: Position,
     dimension: Dimension,
     draw?: (state: T) => string,
-    transition?: (thisItem: Item<T>, targetItem: Item<any>) => void,
+    transition?: (
+      thisItem: Item<T>,
+      targetItem: Item<any>,
+      alert: (message: string) => void,
+    ) => void,
   ) {
     this.name = name
     this.state = state
@@ -140,7 +148,7 @@ export class Engine {
         const movingItem = this.items[this.movingItemIndex]
         const targetItem = this.items[this.hoveredItemIndex]
         if (!movingItem || !targetItem) return
-        movingItem.transition(movingItem, targetItem)
+        movingItem.transition(movingItem, targetItem, this.alert.bind(this))
       }
       if (this.movingItemIndex != null) {
         const movingItem = this.items[this.movingItemIndex]
@@ -170,5 +178,9 @@ export class Engine {
       mouseY <=
         (item.position.y * this.parentHeight) / 100 + item.dimension.height
     )
+  }
+
+  private alert(message: string) {
+    alert(message)
   }
 }
