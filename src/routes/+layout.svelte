@@ -8,4 +8,8 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<style global>
+@import "../lib/styles/global.css";
+</style>
+
 {@render children()}
