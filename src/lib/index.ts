@@ -1,1 +1,14 @@
-// place files you want to import through the `$lib` alias in this folder.
+import { Engine, Item } from "./engine"
+
+export const engine = new Engine([
+  new Item(
+    "item1",
+    {
+      value: 0,
+    },
+    {
+      x: 10,
+      y: 50,
+    },
+  ),
+])
