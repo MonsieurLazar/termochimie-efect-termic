@@ -11,8 +11,8 @@ export const engine = new Engine([
       y: 50,
     },
     {
-      width: 100,
-      height: 100,
+      width: 10,
+      aspectRatio: 1 / 1,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
     (thisItem, targetItem, alert) => {
@@ -36,8 +36,8 @@ export const engine = new Engine([
       y: 80,
     },
     {
-      width: 100,
-      height: 25,
+      width: 2,
+      aspectRatio: 1 / 3,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
     (thisItem, targetItem, alert) => {
