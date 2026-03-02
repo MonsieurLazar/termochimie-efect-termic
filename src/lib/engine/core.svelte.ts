@@ -15,6 +15,7 @@ export class Engine {
   carriedItemIndex: number | null = $state(null)
   pourTargetIndex: number | null = $state(null)
   pouringAmount: number = $state(0)
+  timeScale: number = $state(1)
 
   private carryOffset: Position = { x: 0, y: 0 }
   private pourAnimationId: number | null = null
@@ -209,10 +210,11 @@ export class Engine {
     const loop = (now: number) => {
       const delta = now - this.lastPourTimestamp
       this.lastPourTimestamp = now
+      const scaledDelta = delta * this.timeScale
       const carried = this.items[this.carriedItemIndex!]
       const target = this.items[this.pourTargetIndex!]
-      carried.transition(carried, target, (m) => alert(m), delta)
-      this.pouringAmount += delta / 1000
+      carried.transition(carried, target, (m) => alert(m), scaledDelta)
+      this.pouringAmount += scaledDelta / 1000
 
       if (carried.canTransition(carried, target) !== "continuous") {
         this.stopPouring()
@@ -261,8 +263,10 @@ export class Engine {
       const deltaMs = now - this.lastTickTimestamp
       this.lastTickTimestamp = now
 
+      const scaledDeltaMs = deltaMs * this.timeScale
+
       this.items.forEach((item) => {
-        item.tick(item, this, deltaMs)
+        item.tick(item, this, scaledDeltaMs)
       })
 
       this.engineTickId = requestAnimationFrame(loop)

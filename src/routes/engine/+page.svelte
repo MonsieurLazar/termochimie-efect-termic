@@ -3,11 +3,15 @@
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
+  import ExperimentTimer from "$lib/engine/ui/ExperimentTimer.svelte"
 
   let parentElement: HTMLElement | null = null
 
   onMount(() => {
-    return engine.init(parentElement!)
+    const cleanup = engine.init(parentElement!)
+    return () => {
+      cleanup()
+    }
   })
 
   let cursor = $derived.by(() => {
@@ -25,6 +29,8 @@
   class:is-pouring={engine.engineState === "pouring"}
   style:cursor
 >
+  <ExperimentTimer bind:timeScale={engine.timeScale} />
+
   {#each engine.items as item}
     <div style={item.getStyles()}>
       <item.renderComponent {item} {engine} />
