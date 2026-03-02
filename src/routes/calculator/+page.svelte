@@ -8,67 +8,74 @@
 </script>
 
 <h1><strong>Calcule si rezultate</strong></h1>
-<p>Conform ecuației calorimetrice:</p>
-<div>
-    <span class = "formula">
-        Q = (m<sub>calorimetru</sub> * c<sub>calorimetru</sub> + m<sub>soluțieacidă</sub> * c<sub>acid</sub> + m<sub>soluțiebazică</sub> * c<sub>bază</sub>) * (t<sub>finală</sub>-t<sub>initială</sub>)
-    </span>
-    <span>
-        , in care se cunosc:
-    </span>
-</div>
-<div class = "initial_values">
-    <div>m<sub>calorimetru</sub> * c<sub>calorimetru</sub> = 20 calorii/grade, unde:</div>
-</div>
-<div class = "secondary_values">
-    <div>m<sub>calorimetru</sub> este masa calorimetrului</div>
-    <div>c<sub>calorimetru</sub> este capacitatea calorică a acestuia</div>
-    <div>iar m<sub>calorimetru</sub> * c<sub>calorimetru</sub> reprezintă C<sub>calorimetru</sub>, adică capacitatea calorică a calorimetrului</div>
-</div>
-<div class = "initial_values">
-    <div>m<sub>soluțieacidă</sub> = V<sub>soluțieacidă</sub> * &rho;<sub>soluțieacidă</sub> , unde:</div>
-</div>
-<div class = "secondary_values">
-    <div>m<sub>soluțieacidă</sub> este masa soluției acide</div>
-    <div>V<sub>soluțieacidă</sub> este volumul soluției acide</div>
-    <div>&rho;<sub>soluțieacidă</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
-</div>
-<div class = "secondary_values">
-    <div>c<sub>acid</sub> = 0.931 calorii/grame * grad</div>
-</div>
-<div class = "initial_values">
-    <div>m<sub>soluțiebazică</sub> = V<sub>soluțiebazică</sub> * &rho;<sub>soluțiebazică</sub> , unde:</div>
-</div>
-<div class = "secondary_values">
-    <div>m<sub>soluțiebazică</sub> este masa soluției bazice</div>
-    <div>V<sub>soluțiebazică</sub> este volumul soluției bazice</div>
-    <div>&rho;<sub>soluțiebazică</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
-</div>
-<div class = "secondary_values">
-    <div>c<sub>bază</sub> = 0.931 calorii/grame * grad</div>
-</div>
-<div>
-    <span class = "formula">
-        &Delta;H = -Q/n            
-    </span>
-    <span>
-        , unde H este entalpia, si in care se cunosc:
-    </span>
-</div>
-<div class = "initial_values">
-    <div>n = V<sub>soluțieacidă</sub> * N<sub>soluțieacidă</sub> / 1000 , sau</div>
-    <div>n = V<sub>soluțiebazică</sub> * N<sub>soluțiebazică</sub> / 1000 , unde:</div>
-</div>
-<div class = "secondary_values">
-    <div>n este numărul de echivalenți de acid sau bază</div>
-    <div>V<sub>soluțieacidă</sub> este volumul soluției acide</div>
-    <div>N<sub>soluțieacidă</sub> este normalitatea acidului</div>
-    <div>V<sub>soluțiebazică</sub> este volumul soluției bazice</div>
-    <div>N<sub>soluțiebazică</sub> este normalitatea bazei</div>
-</div>
-<div class = "initial_values">
-    <div>Q este căldura transferată, calculată cu formula de mai sus</div>
-</div>
+<p> <strong> Date cunoscute:</strong></p>
+
+<details>
+    <summary><strong>Calorimetrul</strong></summary>
+    <div class = "initial_values">
+        <div>C<sub>calorimetru</sub> = 20 calorii/grade, unde:</div>
+    </div>
+    <div class = "secondary_values">
+        <div>m<sub>calorimetru</sub> este masa calorimetrului</div>
+        <div>c<sub>calorimetru</sub> este capacitatea calorică a acestuia</div>
+        <div>iar m<sub>calorimetru</sub> * c<sub>calorimetru</sub> reprezintă C<sub>calorimetru</sub>, adică capacitatea calorică a calorimetrului</div>
+    </div>
+</details>
+
+<details>
+    <summary><strong>Soluțiile acide</strong></summary>
+    <div class = "initial_values">
+        <div>m<sub>soluțieacidă</sub> = V<sub>soluțieacidă</sub> * &rho;<sub>soluțieacidă</sub> , unde:</div>
+    </div>
+    <div class = "secondary_values">
+        <div>m<sub>soluțieacidă</sub> este masa soluției acide</div>
+        <div>V<sub>soluțieacidă</sub> este volumul soluției acide</div>
+        <div>&rho;<sub>soluțieacidă</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
+    </div>
+    <div class = "secondary_values">
+        <div>c<sub>soluțieacidă</sub> = 0.931 calorii/grame * grad</div>
+    </div>
+</details>
+
+<details>
+    <summary><strong>Soluțiile bazice</strong></summary>
+    <div class = "initial_values">
+        <div>m<sub>soluțiebazică</sub> = V<sub>soluțiebazică</sub> * &rho;<sub>soluțiebazică</sub> , unde:</div>
+    </div>
+    <div class = "secondary_values">
+        <div>m<sub>soluțiebazică</sub> este masa soluției bazice</div>
+        <div>V<sub>soluțiebazică</sub> este volumul soluției bazice și este de 2 ori mai mare decat cel al solutiei acide</div>
+        <div>&rho;<sub>soluțiebazică</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
+    </div>
+    <div class = "secondary_values">
+        <div>c<sub>soluțiebazică</sub> = 0.931 calorii/grame * grad</div>
+    </div>
+</details>
+
+<details>
+    <summary><strong>Numărul de echivalenți</strong></summary>
+    <div class = "initial_values">
+        <div>n = V<sub>soluțieacidă</sub> * N<sub>soluțieacidă</sub> / 1000 , sau</div>
+        <div>n = V<sub>soluțiebazică</sub> * N<sub>soluțiebazică</sub> / 1000 , unde:</div>
+    </div>
+    <div class = "secondary_values">
+        <div>n este numărul de echivalenți de acid sau bază</div>
+        <div>V<sub>soluțieacidă</sub> este volumul soluției acide</div>
+        <div>N<sub>soluțieacidă</sub> este normalitatea acidului</div>
+        <div>V<sub>soluțiebazică</sub> este volumul soluției bazice</div>
+        <div>N<sub>soluțiebazică</sub> este normalitatea bazei</div>
+    </div>
+</details>
+
+<details>
+    <summary><strong>Temperatura inițială și finală</strong></summary>
+    <div class = "initial_values">
+        <div>t<sub>inițială</sub> = 25 °C și reprezintă temperatura inițială a soluțiilor</div>
+        <div>t<sub>finală</sub> = temperatura măsurată după amestecarea soluțiilor</div>
+    </div>
+</details>
+
+
 
 <div>
   <table>
@@ -78,9 +85,29 @@
         <th>V<sub>soluțieacidă</sub><br />(mL)</th>
         <th>t<sub>inițială</sub><br />(°C)</th>
         <th>t<sub>finală</sub><br />(°C)</th>
-        <th>&Delta;t<br />(°C)</th>
-        <th>Q<br />(cal)</th>
-        <th>&Delta;H<br />(cal/echiv)</th>
+        <th class="has-tooltip">
+            &Delta;t<br />(°C)
+            <div class="tooltip">
+             <strong>Variația de temperatură:</strong><br/>
+             &Delta;t = t<sub>finală</sub> - t<sub>inițială</sub>
+            </div>
+        </th>
+        <th class="has-tooltip">
+            Q<br />(cal)
+            <div class="tooltip">
+                <strong>Căldura transferată:</strong><br/>
+                Q = (C<sub>calorimetru</sub> + m<sub>soluțieacidă</sub> * c<sub>soluțieacida</sub> + m<sub>soluțiebazică</sub>*c<sub>soluțiebazică</sub>) * &Delta;t<br/>
+            </div>
+        </th>
+        <th class="has-tooltip">
+            &Delta;H<br />(cal/echiv)
+            <div class="tooltip">
+                <strong>Entalpia de neutralizare:</strong><br/>
+                &Delta;H = -Q / n<br/>
+                <small>n = (V<sub>acid</sub> * N<sub>acid</sub>) / 1000 sau</small><br/>
+                <small>n = (V<sub>bază</sub> * N<sub>bază</sub>) / 1000</small><br/>
+            </div>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -101,6 +128,30 @@
 </div>
 
 <style>
+    details
+    {
+        margin-bottom: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background-color: #fafafa;
+        overflow: hidden;
+    }
+    summary
+    {
+        padding: 12px 15px;
+        font-weight: bold;
+        cursor: pointer;
+        background-color: #f1f3f5;
+        list-style: none; /* Elimină săgeata standard */
+        display: flex;
+        align-items: center;
+    }
+    details[open] summary
+    {
+        background-color: #07e576;
+        border-bottom: 1px solid #ddd;
+    }
+    
     table
     {
         width: 100%;
@@ -119,9 +170,57 @@
     {
         background-color: #f2f2f2; /* Opțional: un fundal gri deschis pentru capul de tabel */
     }
-    .formula
+    .has-tooltip
     {
-        font-weight: bold;
+        position: relative; /* Esențial pentru ca tooltip-ul să știe unde să apară */
+        cursor: help; /* Schimbă cursorul într-un semn de întrebare */
+        text-decoration: underline dotted #666; /* Un indiciu vizual că poți face hover */
+    }
+    .tooltip 
+    {
+        visibility: hidden;
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        text-align: left;
+        padding: 12px;
+        border-radius: 6px;
+        
+        /* Poziționare deasupra elementului */
+        position: absolute;
+        z-index: 10;
+        bottom: 125%; 
+        right:0%;
+        /*transform: translateX(-50%); /* Centrează cutia */
+        
+        /* Efect de apariție (fade-in) */
+        opacity: 0;
+        transition: opacity 0.3s, visibility 0.3s;
+        
+        /* Dimensiuni și text */
+        width: max-content;
+        max-width: 1000px;
+        font-weight: normal;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  /* Săgeata mică de sub tooltip */
+    .tooltip::after
+    {
+        content: "";
+        position: absolute;
+        top: 100%;
+        right: 10%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #2c3e50 transparent transparent transparent;
+    }
+  /* Arată tooltip-ul când pui mouse-ul pe <th> */
+    .has-tooltip:hover .tooltip
+    {
+        visibility: visible;
+        opacity: 1;
     }
     .initial_values
     {
