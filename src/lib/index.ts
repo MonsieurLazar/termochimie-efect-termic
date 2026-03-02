@@ -15,9 +15,15 @@ export const engine = new Engine([
       height: 100,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
+    (thisItem, targetItem) => {
+      if (targetItem.name === "item2") {
+        targetItem.state.value += 5
+        thisItem.state.value -= 5
+      }
+    },
   ),
   new Item(
-    "item1",
+    "item2",
     {
       value: 25,
     },
@@ -30,5 +36,11 @@ export const engine = new Engine([
       height: 25,
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
+    (thisItem, targetItem) => {
+      if (targetItem.name === "item1") {
+        targetItem.state.value += 5
+        thisItem.state.value -= 5
+      }
+    },
   ),
 ])

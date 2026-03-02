@@ -11,11 +11,20 @@ export type Dimension = {
 export class Item<T> {
   name: string
   defaultState: T
-  state: T
+  state: T = $state({} as T)
   initialPosition: Position
   position: Position = $state({ x: 0, y: 0 })
   dimension: Dimension
-  draw?: (state: T) => string
+  draw: (state: T) => string = () => ""
+  transition: (thisItem: Item<T>, targetItem: Item<any>) => void = () => {}
+  isMoving: boolean = false
+
+  redraw = $derived(
+    JSON.stringify({
+      state: this.state,
+      position: this.position,
+    }),
+  )
 
   constructor(
     name: string,
@@ -23,23 +32,28 @@ export class Item<T> {
     position: Position,
     dimension: Dimension,
     draw?: (state: T) => string,
+    transition?: (thisItem: Item<T>, targetItem: Item<any>) => void,
   ) {
     this.name = name
     this.state = state
     this.defaultState = state
-    this.position = position
-    this.initialPosition = position
+    this.position = { ...position }
+    this.initialPosition = { ...position }
     this.dimension = dimension
-    this.draw = draw
+    this.draw = draw || this.draw
+    this.transition = transition || this.transition
+    this.isMoving = false
   }
 
   getStyles() {
     return `
+        user-select: none;
         position: absolute;
         left: ${this.position.x}%;
         top: ${this.position.y}%;
         width: ${this.dimension.width}px;
         height: ${this.dimension.height}px;
+        ${!this.isMoving ? "transition: left 0.2s, top 0.2s;" : ""}
         ${this.draw ? this.draw(this.state) : ""}
         `
   }
@@ -77,6 +91,7 @@ export class Engine {
       this.hoveredItemIndex = null
       for (let i = 0; i < this.items.length; i++) {
         const item = this.items[i]
+        if (i === this.movingItemIndex) continue
         if (this.intersects(this.mouseX, this.mouseY, item)) {
           this.hoveredItemIndex = i
           break
@@ -112,12 +127,25 @@ export class Engine {
     const mouseDownHandler = (event: MouseEvent) => {
       if (this.hoveredItemIndex == null) return
       this.movingItemIndex = this.hoveredItemIndex
+      const item = this.items[this.movingItemIndex]
+      item.isMoving = true
     }
 
     const mouseUpHandler = (event: MouseEvent) => {
+      if (
+        this.movingItemIndex != null &&
+        this.hoveredItemIndex != null &&
+        this.movingItemIndex !== this.hoveredItemIndex
+      ) {
+        const movingItem = this.items[this.movingItemIndex]
+        const targetItem = this.items[this.hoveredItemIndex]
+        if (!movingItem || !targetItem) return
+        movingItem.transition(movingItem, targetItem)
+      }
       if (this.movingItemIndex != null) {
-        const item = this.items[this.movingItemIndex]
-        item.position = structuredClone(item.initialPosition)
+        const movingItem = this.items[this.movingItemIndex]
+        movingItem.position = structuredClone(movingItem.initialPosition)
+        movingItem.isMoving = false
       }
       this.movingItemIndex = null
     }

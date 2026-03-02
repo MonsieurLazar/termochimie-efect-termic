@@ -19,11 +19,10 @@
 
 <section bind:this={parentElement}>
   {#each engine.items as item}
-    {#key item.position}
-      <div style={item.getStyles()}>
-        {item.name}
-      </div>
-    {/key}
+    <div style={item.getStyles()}>
+      {item.name}
+      {JSON.stringify(item.state)}
+    </div>
   {/each}
 </section>
 
