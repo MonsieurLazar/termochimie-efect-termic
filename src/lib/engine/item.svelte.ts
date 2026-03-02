@@ -1,3 +1,6 @@
+import type { Component } from "svelte"
+import DefaultItemRenderer from "./ui/DefaultItemRenderer.svelte"
+
 export type Position = {
   x: number
   y: number
@@ -18,6 +21,7 @@ export class Item<T> {
   initialPosition: Position
   position: Position = $state({ x: 0, y: 0 })
   dimension: Dimension
+  renderComponent: Component<any> = DefaultItemRenderer as any
   draw: (state: T) => string = () => ""
   tick: (
     thisItem: Item<T>,
@@ -43,6 +47,7 @@ export class Item<T> {
     state: T,
     position: Position,
     dimension: Dimension,
+    renderComponent?: Component<any>,
     draw?: (state: T) => string,
     tick?: (
       thisItem: Item<T>,
@@ -67,6 +72,7 @@ export class Item<T> {
     this.position = { ...position }
     this.initialPosition = { ...position }
     this.dimension = dimension
+    this.renderComponent = renderComponent || this.renderComponent
     this.draw = draw || this.draw
     this.tick = tick || this.tick
     this.transition = transition || this.transition

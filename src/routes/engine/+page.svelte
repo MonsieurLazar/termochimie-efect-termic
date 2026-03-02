@@ -27,8 +27,7 @@
 >
   {#each engine.items as item}
     <div style={item.getStyles()}>
-      <p>{item.name}</p>
-      <p>{item.state.temperatureC.toFixed(2)}°C</p>
+      <item.renderComponent {item} {engine} />
     </div>
   {/each}
 
