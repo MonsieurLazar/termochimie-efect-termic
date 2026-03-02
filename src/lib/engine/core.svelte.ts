@@ -37,29 +37,33 @@ export class Engine {
       mouseup: (e: MouseEvent) => this.handleMouseUp(e),
       click: (e: MouseEvent) => this.handleClick(e),
       resize: () => this.updateMetrics(),
+      scroll: () => this.updateMetrics(),
     }
 
-    Object.entries(handlers).forEach(([evt, fn]) =>
-      document.addEventListener(evt, fn as any),
-    )
+    Object.entries(handlers).forEach(([evt, fn]) => {
+      const target = evt === "scroll" ? window : document
+      target.addEventListener(evt, fn as any, evt === "scroll" ? true : false)
+    })
 
     this.startEngineTick()
 
     return () => {
       this.stopEngineTick()
-      Object.entries(handlers).forEach(([evt, fn]) =>
-        document.removeEventListener(evt, fn as any),
-      )
+      Object.entries(handlers).forEach(([evt, fn]) => {
+        const target = evt === "scroll" ? window : document
+        target.removeEventListener(evt, fn as any, evt === "scroll" ? true : false)
+      })
     }
   }
 
   private updateMetrics = () => {
     if (!this.parent) return
+    const rect = this.parent.getBoundingClientRect()
     this.parentMetrics = {
-      x: this.parent.offsetLeft,
-      y: this.parent.offsetTop,
-      w: this.parent.offsetWidth,
-      h: this.parent.offsetHeight,
+      x: rect.left,
+      y: rect.top,
+      w: rect.width,
+      h: rect.height,
     }
   }
 
