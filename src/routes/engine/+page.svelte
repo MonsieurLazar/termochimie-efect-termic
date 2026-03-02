@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { engine } from "$lib/index"
+  import { engine, TRANSFER_RATE } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -11,7 +11,8 @@
   })
 
   let cursor = $derived.by(() => {
-    if (engine.engineState === "idle" && engine.hoveredItemIndex !== null) return "grab"
+    if (engine.engineState === "idle" && engine.hoveredItemIndex !== null)
+      return "grab"
     if (engine.engineState !== "idle") return "grabbing"
     return "default"
   })
@@ -34,9 +35,9 @@
   {/each}
 
   {#if engine.engineState === "pouring" && engine.carriedItemIndex !== null}
-    <PourIndicator 
-      item={engine.items[engine.carriedItemIndex]} 
-      amount={engine.pouringAmount} 
+    <PourIndicator
+      item={engine.items[engine.carriedItemIndex]}
+      amount={engine.pouringAmount * TRANSFER_RATE}
     />
   {/if}
 </section>

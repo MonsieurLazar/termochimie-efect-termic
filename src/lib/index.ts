@@ -1,7 +1,7 @@
 import { Item } from "./engine/item.svelte"
 import { Engine } from "./engine/core.svelte"
 
-const TRANSFER_RATE = 30 // units per second
+export const TRANSFER_RATE = 1 // units per second
 
 const createInfiniteSource = (
   name: string,
@@ -59,12 +59,17 @@ const createGlass = (name: string, x: number, y: number) =>
       }
       if (target.kind === "spalatorie") self.state.substances = {}
     },
-    (_, target) =>
-      target.kind === "glass"
-        ? "continuous"
-        : target.kind === "spalatorie"
-          ? "instant"
-          : false,
+    (self, target) => {
+      if (target.kind === "glass") {
+        const total = Object.values(self.state.substances).reduce(
+          (s, k) => s + k,
+          0,
+        )
+        return total > 0 ? "continuous" : false
+      }
+      if (target.kind === "spalatorie") return "instant"
+      return false
+    },
   )
 
 export const engine = new Engine([

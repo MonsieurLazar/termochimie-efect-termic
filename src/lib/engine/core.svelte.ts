@@ -204,6 +204,14 @@ export class Engine {
       const target = this.items[this.pourTargetIndex!]
       carried.transition(carried, target, (m) => alert(m), delta)
       this.pouringAmount += delta / 1000
+
+      if (carried.canTransition(carried, target) !== "continuous") {
+        this.stopPouring()
+        this.returnCarriedItem()
+        this.engineState = "idle"
+        return
+      }
+
       this.pourAnimationId = requestAnimationFrame(loop)
     }
     this.pourAnimationId = requestAnimationFrame(loop)
