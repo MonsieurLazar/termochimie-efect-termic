@@ -1,5 +1,10 @@
 <script lang="ts">
-
+    let Vacid1 = $state(25);
+    let Tfinal1 = $state(0);
+    let Vacid2 = $state(25);
+    let Tfinal2 = $state(0);
+    let Vacid3 = $state(25);
+    let Tfinal3 = $state(0);
 </script>
 
 <h1><strong>Calcule si rezultate</strong></h1>
@@ -28,6 +33,9 @@
     <div>V<sub>soluțieacidă</sub> este volumul soluției acide</div>
     <div>&rho;<sub>soluțieacidă</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
 </div>
+<div class = "secondary_values">
+    <div>c<sub>acid</sub> = 0.931 calorii/grame * grad</div>
+</div>
 <div class = "initial_values">
     <div>m<sub>soluțiebazică</sub> = V<sub>soluțiebazică</sub> * &rho;<sub>soluțiebazică</sub> , unde:</div>
 </div>
@@ -36,12 +44,15 @@
     <div>V<sub>soluțiebazică</sub> este volumul soluției bazice</div>
     <div>&rho;<sub>soluțiebazică</sub> este densitatea acesteia și are valoarea 1.06 grame/cm<sup>3</sup></div>
 </div>
+<div class = "secondary_values">
+    <div>c<sub>bază</sub> = 0.931 calorii/grame * grad</div>
+</div>
 <div>
     <span class = "formula">
         &Delta;H = -Q/n            
     </span>
     <span>
-        , in care se cunosc:
+        , unde H este entalpia, si in care se cunosc:
     </span>
 </div>
 <div class = "initial_values">
@@ -64,6 +75,7 @@
     <thead>
       <tr>
         <th>Reacția studiată</th>
+        <th>V<sub>soluțieacidă</sub><br />(mL)</th>
         <th>t<sub>inițială</sub><br />(°C)</th>
         <th>t<sub>finală</sub><br />(°C)</th>
         <th>&Delta;t<br />(°C)</th>
@@ -74,22 +86,39 @@
     <tbody>
       <tr>
         <td>HCl + NaOH &rarr; NaCl + H<sub>2</sub>O</td>
-        <td></td><td></td><td></td><td></td><td></td>
+        <td><input type="number" bind:value={Vacid1} /></td><td>25</td><td><input type="number" bind:value={Tfinal1}/></td><td>{Tfinal1 - 25}</td><td>{((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - 25)) / (Vacid1 / 1000)).toFixed(3)}</td>
       </tr>
       <tr>
         <td>H<sub>2</sub>SO<sub>4</sub> + 2NaOH &rarr; Na<sub>2</sub>SO<sub>4</sub> + 2H<sub>2</sub>O</td>
-        <td></td><td></td><td></td><td></td><td></td>
+        <td><input type="number" bind:value={Vacid2} /></td><td>25</td><td><input type="number" bind:value={Tfinal2}/></td><td>{Tfinal2 - 25}</td><td>{((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - 25)) / (Vacid2 / 1000)).toFixed(3)}</td>
       </tr>
       <tr>
         <td>HCl + NH<sub>4</sub>OH &rarr; NH<sub>4</sub>Cl + H<sub>2</sub>O</td>
-        <td></td><td></td><td></td><td></td><td></td>
+        <td><input type="number" bind:value={Vacid3} /></td><td>25</td><td><input type="number" bind:value={Tfinal3}/></td><td>{Tfinal3 - 25}</td><td>{((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - 25)) / (Vacid3 / 1000)).toFixed(3)}</td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <style>
-    
+    table
+    {
+        width: 100%;
+        border-collapse: collapse; /* Aceasta elimină spațiul dublu dintre linii */
+        margin-top: 2rem;
+        background-color: white;
+    }
+
+    th, td
+    {
+        border: 0.05rem solid black; /* Aceasta trasează liniile */
+        padding: 0.5rem;
+        text-align: center;
+    }
+    th
+    {
+        background-color: #f2f2f2; /* Opțional: un fundal gri deschis pentru capul de tabel */
+    }
     .formula
     {
         font-weight: bold;
