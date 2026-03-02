@@ -18,8 +18,6 @@
   })
 </script>
 
-<EngineDebugPanel {engine} />
-
 <section
   bind:this={parentElement}
   class:is-idle={engine.engineState === "idle"}
@@ -29,8 +27,8 @@
 >
   {#each engine.items as item}
     <div style={item.getStyles()}>
-      {item.name}
-      {JSON.stringify(item.state)}
+      <p>{item.name}</p>
+      <p>{item.state.temperatureC.toFixed(2)}°C</p>
     </div>
   {/each}
 
@@ -41,6 +39,7 @@
     />
   {/if}
 </section>
+<EngineDebugPanel {engine} />
 
 <style>
   section {

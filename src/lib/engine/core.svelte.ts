@@ -18,6 +18,8 @@ export class Engine {
 
   private carryOffset: Position = { x: 0, y: 0 }
   private pourAnimationId: number | null = null
+  private engineTickId: number | null = null
+  private lastTickTimestamp: number = 0
   private lastPourTimestamp: number = 0
   private pourStartedThisMousedown: boolean = false
 
@@ -41,7 +43,10 @@ export class Engine {
       document.addEventListener(evt, fn as any),
     )
 
+    this.startEngineTick()
+
     return () => {
+      this.stopEngineTick()
       Object.entries(handlers).forEach(([evt, fn]) =>
         document.removeEventListener(evt, fn as any),
       )
@@ -244,5 +249,25 @@ export class Engine {
   private markHovered(index: number) {
     this.hoveredItemIndex = index
     this.items[index].isHovered = true
+  }
+
+  private startEngineTick() {
+    this.lastTickTimestamp = performance.now()
+    const loop = (now: number) => {
+      const deltaMs = now - this.lastTickTimestamp
+      this.lastTickTimestamp = now
+
+      this.items.forEach((item) => {
+        item.tick(item, this, deltaMs)
+      })
+
+      this.engineTickId = requestAnimationFrame(loop)
+    }
+    this.engineTickId = requestAnimationFrame(loop)
+  }
+
+  private stopEngineTick() {
+    if (this.engineTickId !== null) cancelAnimationFrame(this.engineTickId)
+    this.engineTickId = null
   }
 }

@@ -19,6 +19,11 @@ export class Item<T> {
   position: Position = $state({ x: 0, y: 0 })
   dimension: Dimension
   draw: (state: T) => string = () => ""
+  tick: (
+    thisItem: Item<T>,
+    engine: any,
+    deltaMs: number,
+  ) => void = () => {}
   transition: (
     thisItem: Item<T>,
     targetItem: Item<any>,
@@ -39,6 +44,11 @@ export class Item<T> {
     position: Position,
     dimension: Dimension,
     draw?: (state: T) => string,
+    tick?: (
+      thisItem: Item<T>,
+      engine: any,
+      deltaMs: number,
+    ) => void,
     transition?: (
       thisItem: Item<T>,
       targetItem: Item<any>,
@@ -58,6 +68,7 @@ export class Item<T> {
     this.initialPosition = { ...position }
     this.dimension = dimension
     this.draw = draw || this.draw
+    this.tick = tick || this.tick
     this.transition = transition || this.transition
     this.canTransition = canTransition || this.canTransition
     this.isMoving = false
