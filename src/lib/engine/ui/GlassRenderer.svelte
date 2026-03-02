@@ -42,11 +42,25 @@
     let currentY = height - 5
     const availableHeight = (height - 10) * fillLevel
 
+    const naoh_aq = (substances["NaOH_aq"] || 0)
+    const hcl_aq = (substances["HCl_aq"] || 0)
+    const hasIndicator = (substances["Indicator"] || 0) > 0.01
+    const isBasic = naoh_aq > hcl_aq + 0.01
+    const indicatorColor = (hasIndicator && isBasic) ? "255, 0, 150" : null
+
     sorted.forEach(([name, amount]) => {
       const meta = SUBSTANCES[name] || { color: "128, 128, 128", opacity: 0.5 }
       const layerHeight = (amount / totalUnits) * availableHeight
 
-      ctx.fillStyle = `rgba(${meta.color}, ${meta.opacity})`
+      let color = meta.color
+      let opacity = meta.opacity
+
+      if (indicatorColor && (name.includes("_aq") || name === "H2O" || name === "NaCl_aq")) {
+        color = indicatorColor
+        opacity = Math.max(opacity, 0.5)
+      }
+
+      ctx.fillStyle = `rgba(${color}, ${opacity})`
       ctx.fillRect(5, currentY - layerHeight, width - 10, layerHeight)
 
       // Interface shimmer

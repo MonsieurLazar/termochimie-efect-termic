@@ -13,9 +13,13 @@ export type SubstanceMeta = {
 }
 
 export const SUBSTANCES: Record<string, SubstanceMeta> = {
-  NaOH: { color: "255, 0, 0", density: 2.13, opacity: 0.8 },
-  H2O: { color: "0, 200, 255", density: 1.0, opacity: 0.4 },
-  NaOH_solution: { color: "200, 0, 255", density: 1.2, opacity: 0.6 },
+  NaOH: { color: "255, 200, 200", density: 2.13, opacity: 0.9 }, // White-ish solid
+  HCl: { color: "200, 255, 200", density: 1.18, opacity: 0.5 }, // Clear/greenish conc
+  H2O: { color: "0, 200, 255", density: 1.0, opacity: 0.3 }, // Blue water
+  NaOH_aq: { color: "255, 100, 0", density: 1.05, opacity: 0.6 },
+  HCl_aq: { color: "100, 255, 0", density: 1.05, opacity: 0.6 },
+  NaCl_aq: { color: "200, 200, 200", density: 1.1, opacity: 0.4 },
+  Indicator: { color: "255, 255, 255", density: 0.9, opacity: 0.1 },
 }
 
 export type GlassState = {
@@ -39,7 +43,8 @@ const createInfiniteSource = (
     { x, y },
     { width: 10, aspectRatio: 1 },
     undefined,
-    () => `background-color: ${color};`,
+    () =>
+      `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
     undefined,
     (_, target, __, deltaMs) => {
       if (target.kind === "glass" && deltaMs) {
@@ -89,35 +94,52 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
     GlassRenderer as any,
     undefined,
     (self, engine, deltaMs) => {
-      const naoh = self.state.substances["NaOH"] || 0
-      const h2o = self.state.substances["H2O"] || 0
+      const state = self.state
+      const subs = state.substances
+      const dt = deltaMs / 1000
+      let reactionOccurred = false
 
-      if (naoh > 0.01 && h2o > 0.01) {
-        const rate = 0.5 * (deltaMs / 1000)
-        const reacted = Math.min(naoh, h2o, rate)
-
-        self.state.temperatureC += reacted * 10
-        self.state.reactionIntensity = Math.min(
-          1,
-          self.state.reactionIntensity + 0.1,
-        )
-
-        self.state.substances["NaOH"] -= reacted
-        self.state.substances["H2O"] -= reacted
-        self.state.substances["NaOH_solution"] =
-          (self.state.substances["NaOH_solution"] || 0) + reacted
-      } else {
-        self.state.reactionIntensity = Math.max(
-          0,
-          self.state.reactionIntensity - 0.02,
-        )
+      // 1. Dissolution: NaOH + H2O -> NaOH_aq
+      if (subs["NaOH"] > 0 && subs["H2O"] > 0.1) {
+        const rate = 2.0 * dt
+        const reacted = Math.min(subs["NaOH"], subs["H2O"], rate)
+        subs["NaOH"] -= reacted
+        subs["NaOH_aq"] = (subs["NaOH_aq"] || 0) + reacted
+        state.temperatureC += reacted * 15
+        reactionOccurred = true
       }
 
-      const dt =
-        (AMBIENT_TEMPERATURE - self.state.temperatureC) *
-        COOLING_COEFFICIENT *
-        (deltaMs / 1000)
-      self.state.temperatureC += dt
+      // 2. Dissolution: HCl + H2O -> HCl_aq
+      if (subs["HCl"] > 0 && subs["H2O"] > 0.1) {
+        const rate = 2.0 * dt
+        const reacted = Math.min(subs["HCl"], subs["H2O"], rate)
+        subs["HCl"] -= reacted
+        subs["HCl_aq"] = (subs["HCl_aq"] || 0) + reacted
+        state.temperatureC += reacted * 12
+        reactionOccurred = true
+      }
+
+      // 3. Neutralization: NaOH_aq + HCl_aq -> NaCl_aq + H2O
+      if (subs["NaOH_aq"] > 0.01 && subs["HCl_aq"] > 0.01) {
+        const rate = 10.0 * dt
+        const reacted = Math.min(subs["NaOH_aq"], subs["HCl_aq"], rate)
+        subs["NaOH_aq"] -= reacted
+        subs["HCl_aq"] -= reacted
+        subs["NaCl_aq"] = (subs["NaCl_aq"] || 0) + reacted
+        subs["H2O"] = (subs["H2O"] || 0) + reacted
+        state.temperatureC += reacted * 40
+        reactionOccurred = true
+      }
+
+      if (reactionOccurred) {
+        state.reactionIntensity = Math.min(1, state.reactionIntensity + 0.2)
+      } else {
+        state.reactionIntensity = Math.max(0, state.reactionIntensity - 0.05)
+      }
+
+      const cooldown =
+        (AMBIENT_TEMPERATURE - state.temperatureC) * COOLING_COEFFICIENT * dt
+      state.temperatureC += cooldown
     },
     (self, target, _, deltaMs) => {
       if (target.kind === "glass" && deltaMs) {
@@ -186,10 +208,14 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
   )
 
 export const engine = new Engine([
-  createInfiniteSource("Big NaOH", "NaOH", 10, 50, "red"),
-  createInfiniteSource("Big H2O", "H2O", 10, 20, "blue"),
-  createGlass("Glass 1", 27.65, 60, 25),
-  createGlass("Glass 2", 35.65, 50, 50),
+  createInfiniteSource("NaOH (s)", "NaOH", 5, 10, "#fee2e2"),
+  createInfiniteSource("HCl (conc)", "HCl", 15, 30, "#dcfce7"),
+  createInfiniteSource("Distilled H2O", "H2O", 5, 50, "#3b82f6"),
+  createInfiniteSource("Phenolphthalein", "Indicator", 15, 70, "#fdf4ff"),
+
+  createGlass("Main Glass", 30, 50, 150),
+  createGlass("Secondary Glass", 50, 50, 100),
+
   new Item<GlassState>(
     "spalatorie",
     "Spalatorie",
