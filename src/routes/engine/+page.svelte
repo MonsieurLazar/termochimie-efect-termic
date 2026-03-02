@@ -1,10 +1,22 @@
 <script lang="ts">
-  import { engine } from "$lib"
+  import { engine } from "$lib/index"
 </script>
 
+<p>
+  Hovered item: {engine.hoveredItemIndex}
+</p>
+
 <section>
-  {#each engine.items as item}
-    <div style={item.getStyles()}>{item.name}</div>
+  {#each engine.items as item, index}
+    <div
+      role="cell"
+      tabindex={index}
+      style={item.getStyles()}
+      onmouseenter={() => engine.markHoveredItem(index)}
+      onmouseleave={() => engine.markHoveredItem(null)}
+    >
+      {item.name}
+    </div>
   {/each}
 </section>
 
