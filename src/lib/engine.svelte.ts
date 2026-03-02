@@ -9,6 +9,7 @@ export type Dimension = {
 }
 
 export class Item<T> {
+  kind: string = "unknown"
   name: string
   defaultState: T
   state: T = $state({} as T)
@@ -25,6 +26,7 @@ export class Item<T> {
   isHovered: boolean = $state(false)
 
   constructor(
+    kind: string,
     name: string,
     state: T,
     position: Position,
@@ -36,6 +38,7 @@ export class Item<T> {
       alert: (message: string) => void,
     ) => void,
   ) {
+    this.kind = kind
     this.name = name
     this.state = state
     this.defaultState = state
@@ -58,6 +61,7 @@ export class Item<T> {
         aspect-ratio: ${this.dimension.aspectRatio};
         ${!this.isMoving ? "transition: left 0.2s, top 0.2s;" : ""}
         ${this.isHovered ? "outline: 2px solid blue;" : ""}
+        ${this.isMoving ? "z-index: 1000;" : ""}
         ${this.draw ? this.draw(this.state) : ""}
         `
   }
@@ -104,14 +108,8 @@ export class Engine {
         const heightPercent = this.getItemHeightPercent(item)
         const targetX = this.mouseX - this.movingOffset.x
         const targetY = this.mouseY - this.movingOffset.y
-        item.position.x = Math.max(
-          0,
-          Math.min(100 - widthPercent, targetX),
-        )
-        item.position.y = Math.max(
-          0,
-          Math.min(100 - heightPercent, targetY),
-        )
+        item.position.x = Math.max(0, Math.min(100 - widthPercent, targetX))
+        item.position.y = Math.max(0, Math.min(100 - heightPercent, targetY))
         this.clearHovered()
         const overlappingIndex = this.findOverlappingItemIndex(
           this.movingItemIndex,
