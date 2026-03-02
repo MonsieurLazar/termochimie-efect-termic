@@ -16,4 +16,19 @@ export const engine = new Engine([
     },
     (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
   ),
+  new Item(
+    "item1",
+    {
+      value: 25,
+    },
+    {
+      x: 10,
+      y: 80,
+    },
+    {
+      width: 100,
+      height: 25,
+    },
+    (state) => `background-color: rgba(255, 0, 0, ${state.value / 100});`,
+  ),
 ])
