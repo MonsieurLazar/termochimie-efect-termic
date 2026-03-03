@@ -9,9 +9,6 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<<<<<<< Updated upstream
-{@render children()}
-=======
 <div class="main">
   {@render children()}
 </div>
@@ -21,4 +18,3 @@
     padding: 1rem;
   }
 </style>
->>>>>>> Stashed changes
