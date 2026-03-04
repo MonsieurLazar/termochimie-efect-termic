@@ -21,8 +21,9 @@ reacţii exoterme ∆H &lt; O </span>, iar cel în care sistemul absoarbe căldu
 </p>
 
 <!-- Descriere lucrarii -->
-<h1><strong>1. Determinarea entalpiei de utilizare</strong></h1>
-<h2><strong> Principiul lucrării: </strong></h2>
+ <br>
+<h1><span class = "highlight"> Determinarea entalpiei de utilizare </span></h1>
+<h2><span class = "highlight"> Principiul lucrării: </span></h2>
 <p class = "indent_paragraph">
 Căldura de neutralizare a unui acid cu o bază reprezintă cantitatea de căldură degajată la
 formarea unui mol de apă (H<sub>2</sub>O) dintr-un ion gram de protoni hidrataţi H<sub>3</sub>O<sup>+</sup>
@@ -53,7 +54,9 @@ Când acidul, baza sau ambele sunt electroliţi slabi, deci sunt parţial disoci
 entalpia de neutralizare este mai mică, datorită energiei consumate pentru disocierea lor.
 </p>
 
-<h2><strong>Scopul lucrării:</strong></h2>
+<!-- Scopul lucrarii -->
+<br>
+<h2><span class = "highlight">Scopul lucrării:</span></h2>
 <p class = "indent_paragraph">Determinăm entalpia de neutralizare pentru următoarele reacţii:</p>
 <center class = "formula">
     a) HCl + NaOH → NaCl + H<sub>2</sub>O &emsp;&emsp;(3)
@@ -66,6 +69,13 @@ entalpia de neutralizare este mai mică, datorită energiei consumate pentru dis
     c) HCl + NH<sub>4</sub>OH → 
     NH<sub>4</sub>Cl + H<sub>2</sub>O &emsp;&emsp;(5)
 </center>
+
+<!-- Aparatura si substante-->
+<br>
+<h2><span class = "highlight">Aparatură şi substanţe</span></h2>
+<p class = "indent_paragraph"><b><i>Aparatura: </i></b> calorimetru, cilindri gradaţi, termometru</p>
+<p class = "indent_paragraph"><b><i>Substanţe: </i></b> soluţii de HCl 1N, H2SO4 1N, NaOH 0,5N şi NH4OH 0,5N</p>
+
 
 <style>
     /* Paragraf cu indentare */
