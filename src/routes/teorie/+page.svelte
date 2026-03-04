@@ -75,7 +75,40 @@ entalpia de neutralizare este mai mică, datorită energiei consumate pentru dis
 <h2><span class = "highlight">Aparatură şi substanţe</span></h2>
 <p class = "indent_paragraph"><b><i>Aparatura: </i></b> calorimetru, cilindri gradaţi, termometru</p>
 <p class = "indent_paragraph"><b><i>Substanţe: </i></b> soluţii de HCl 1N, H2SO4 1N, NaOH 0,5N şi NH4OH 0,5N</p>
+<p class = "indent_paragraph">
+    Aparatul cu ajutorul căruia se măsoară efectele termice ale proceselor chimice şi fizice în
+condiţii adiabatice, se numeşte calorimetru. În laboratoarele de chimie generală se va folosi drept
+sistem adiabat un pahar Berzelius aflat într-un vas cilindric de protecţie din polistiren, care asigură
+izolarea temică. În paharul de sticlă se introduc soluţiile şi termometrul, iar agitarea mecanică se
+realizează mişcând cu grijă sistemul pentru uniformizarea temperaturii.
+</p>
 
+<!-- Modul in care e realizata lucrarea -->
+<br>
+<h2><span class = "highlight"> Modul de lucru </span></h2>
+<ul>
+    <li>
+        <p class = "indent_paragraph">
+            se introduc în paharul de sticlă al sistemului calorimetric 25 mL soluţie de HCl 1N şi se
+            citeşte, după aproximativ 3 minute, temperatura acestei soluţii (t<sub>i</sub>) cu ajutorul unui termometru;
+        </p>
+    </li>
+    <li>
+        <p class = "indent_paragraph">
+            se adaugă 50 mL NaOH 0,5 N, la aceeaşi temperatură, peste soluţia aflată în calorimetru;
+        </p>
+    </li>
+    <li>
+        <p class = "indent_paragraph">
+             din momentul amestecării se urmăreşte variaţia temperaturii până când ea devine constantă
+            şi se notează valoarea ei (t<sub>f</sub>).
+        </p>
+    </li>
+</ul>
+<p class = "indent_paragraph">
+    Se procedează similar şi pentru celelalte reacţii de neutralizare indicate mai sus, folosind
+    aceleaşi volume de soluţii:
+</p>
 
 <style>
     /* Paragraf cu indentare */
