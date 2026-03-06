@@ -128,7 +128,7 @@ realizează mişcând cu grijă sistemul pentru uniformizarea temperaturii.
         font-weight: bold;
     }
 
-    #title{
+    h1{
         text-align: center;
         font-size: 1.7rem;
     }
