@@ -2,7 +2,9 @@
 
 </script>
 
-<h1 style = "text-align: center; font-size: 1.7rem;">Teorie</h1>
+<div id = "title">
+<h1>Teorie</h1>
+</div>
 
 <!-- Paragraf introductiv -->
 <p class = "indent_paragraph">
@@ -126,6 +128,11 @@ realizează mişcând cu grijă sistemul pentru uniformizarea temperaturii.
     .formula{
         font-size: 2rem;
         font-weight: bold;
+    }
+
+    #title{
+        text-align: center;
+        font-size: 1.7rem;
     }
 
 </style>
