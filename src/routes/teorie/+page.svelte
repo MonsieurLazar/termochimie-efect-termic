@@ -2,9 +2,7 @@
 
 </script>
 
-<div id = "teorie">
-<h1>Teorie</h1>
-</div>
+<h1 style = "text-align: center; font-size: 1.7rem;">Teorie</h1>
 
 <!-- Paragraf introductiv -->
 <p class = "indent_paragraph">
