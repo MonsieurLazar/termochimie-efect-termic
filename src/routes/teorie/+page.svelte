@@ -128,11 +128,4 @@ realizează mişcând cu grijă sistemul pentru uniformizarea temperaturii.
         font-weight: bold;
     }
 
-    /* Formatare titlu mare */
-    #teorie{
-        display: flex;
-        justify-content: center;
-        font-size: 1.7rem;
-    }
-
 </style>
