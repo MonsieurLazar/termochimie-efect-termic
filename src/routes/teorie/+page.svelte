@@ -2,7 +2,7 @@
 
 </script>
 
-<h1 id = "title">Teorie</h1>
+<h1>Teorie</h1>
 
 <!-- Paragraf introductiv -->
 <p class = "indent_paragraph">
