@@ -1,10 +1,13 @@
 <script lang="ts">
     let Vacid1 = $state(25);
     let Tfinal1 = $state(0);
+    let Tinițial1 = $state(25);
     let Vacid2 = $state(25);
     let Tfinal2 = $state(0);
+    let Tinițial2 = $state(25);
     let Vacid3 = $state(25);
     let Tfinal3 = $state(0);
+    let Tinițial3 = $state(25);
 </script>
 
 <h1><strong>Calcule si rezultate</strong></h1>
@@ -113,15 +116,15 @@
     <tbody>
       <tr>
         <td>HCl + NaOH &rarr; NaCl + H<sub>2</sub>O</td>
-        <td><input type="number" bind:value={Vacid1} /></td><td>25</td><td><input type="number" bind:value={Tfinal1}/></td><td>{Tfinal1 - 25}</td><td>{((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - 25)) / (Vacid1 / 1000)).toFixed(3)}</td>
+        <td><input type="number" bind:value={Vacid1} /></td><td><input type="number" bind:value={Tinițial1}/></td><td><input type="number" bind:value={Tfinal1}/></td><td>{Tfinal1 - Tinițial1}</td><td>{((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - Tinițial1)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - Tinițial1)) / (Vacid1 / 1000)).toFixed(3)}</td>
       </tr>
       <tr>
         <td>H<sub>2</sub>SO<sub>4</sub> + 2NaOH &rarr; Na<sub>2</sub>SO<sub>4</sub> + 2H<sub>2</sub>O</td>
-        <td><input type="number" bind:value={Vacid2} /></td><td>25</td><td><input type="number" bind:value={Tfinal2}/></td><td>{Tfinal2 - 25}</td><td>{((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - 25)) / (Vacid2 / 1000)).toFixed(3)}</td>
+        <td><input type="number" bind:value={Vacid2} /></td><td><input type="number" bind:value={Tinițial2}/></td><td><input type="number" bind:value={Tfinal2}/></td><td>{Tfinal2 - Tinițial2}</td><td>{((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - Tinițial2)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - Tinițial2)) / (Vacid2 / 1000)).toFixed(3)}</td>
       </tr>
       <tr>
         <td>HCl + NH<sub>4</sub>OH &rarr; NH<sub>4</sub>Cl + H<sub>2</sub>O</td>
-        <td><input type="number" bind:value={Vacid3} /></td><td>25</td><td><input type="number" bind:value={Tfinal3}/></td><td>{Tfinal3 - 25}</td><td>{((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - 25)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - 25)) / (Vacid3 / 1000)).toFixed(3)}</td>
+        <td><input type="number" bind:value={Vacid3} /></td><td><input type="number" bind:value={Tinițial3}/></td><td><input type="number" bind:value={Tfinal3}/></td><td>{Tfinal3 - Tinițial3}</td><td>{((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - Tinițial3)).toFixed(3)}</td><td>{(-1 * ((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - Tinițial3)) / (Vacid3 / 1000)).toFixed(3)}</td>
       </tr>
     </tbody>
   </table>
