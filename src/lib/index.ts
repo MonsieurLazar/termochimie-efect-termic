@@ -35,6 +35,7 @@ const createInfiniteSource = (
   x: number,
   y: number,
   color: string,
+  imageUrl: string
 ) =>
   new Item<any>(
     "infinite",
@@ -43,8 +44,16 @@ const createInfiniteSource = (
     { x, y },
     { width: 10, aspectRatio: 1 },
     undefined,
-    () =>
-      `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
+    () =>{
+        let style = `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`;
+        if(imageUrl) {
+          style += ` background-image: url('${imageUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center;`;
+        }
+        else {
+          style = `background-color = ${color};`;
+        }
+        return style;
+    },
     undefined,
     (_, target, __, deltaMs) => {
       if (target.kind === "glass" && deltaMs) {
@@ -189,10 +198,10 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
   )
 
 export const engine = new Engine([
-  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.1, H2O: 0.9 }, 5, 10, "#fee2e2"),
-  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.1, H2O: 0.9 }, 15, 30, "#dcfce7"),
-  createInfiniteSource("Distilled H2O", { H2O: 1 }, 5, 50, "#3b82f6"),
-  createInfiniteSource("Phenolphthalein", { Indicator: 0.01, H2O: 0.99 }, 15, 70, "#fdf4ff"),
+  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.1, H2O: 0.9 }, 5, 10, "#fee2e2", "/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.1, H2O: 0.9 }, 15, 30, "#dcfce7", "/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("Distilled H2O", { H2O: 1 }, 5, 50, "#3b82f6", "/design/300x300/apa_distilata_300.png"),
+  createInfiniteSource("Phenolphthalein", { Indicator: 0.01, H2O: 0.99 }, 15, 70, "#fdf4ff", "/design/300x300/subst_inf_300.png"),
 
   createGlass("Main Glass", 30, 50, 150),
   createGlass("Secondary Glass", 50, 50, 100),
