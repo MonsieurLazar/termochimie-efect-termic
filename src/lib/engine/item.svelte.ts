@@ -37,9 +37,11 @@ export class Item<T> {
   canTransition: (
     thisItem: Item<T>,
     targetItem: Item<any>,
-  ) => TransitionType = () => "instant"
+  ) => TransitionType = () => "instant" 
   isMoving: boolean = $state(false)
   isHovered: boolean = $state(false)
+  imageUrl?: string = $state("")
+  color: string = $state("")
 
   constructor(
     kind: string,
@@ -64,7 +66,11 @@ export class Item<T> {
       thisItem: Item<T>,
       targetItem: Item<any>,
     ) => TransitionType,
+    imageUrl?: string,
+    color?: string
   ) {
+    this.imageUrl = imageUrl;
+    this.color = color || "";
     this.kind = kind
     this.name = name
     this.state = state

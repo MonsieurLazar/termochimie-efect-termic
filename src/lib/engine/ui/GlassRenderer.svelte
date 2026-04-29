@@ -8,7 +8,6 @@
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
-
   let time = 0
   let animationFrame: number
 
@@ -22,26 +21,19 @@
     const state = item.state
     const substances = state.substances
     const totalUnits = Object.values(substances).reduce((a, b) => a + b, 0)
-
     const fillLevel = Math.min(1, totalUnits / state.maxCapacity)
 
-    // 1. Draw Glass Body (Outline)
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)"
-    ctx.lineWidth = 2
-    ctx.strokeRect(5, 5, width - 10, height - 10)
+    // 1. Draw Glass Body (Outline) - opțional acum că avem sprite
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"
+    ctx.lineWidth = 1
+    ctx.strokeRect(2, 2, width - 4, height - 4)
 
-    // 2. Sort substances by density (heaviest at bottom)
     const sorted = Object.entries(substances)
       .filter(([_, amount]) => amount > 0.001)
-      .sort(
-        ([a], [b]) =>
-          (SUBSTANCES[b]?.density || 0) - (SUBSTANCES[a]?.density || 0),
-      )
+      .sort(([a], [b]) => (SUBSTANCES[b]?.density || 0) - (SUBSTANCES[a]?.density || 0))
 
-    // 3. Draw Layers
     let currentY = height - 5
     const availableHeight = (height - 10) * fillLevel
-
     const naoh_aq = (substances["NaOH_aq"] || 0)
     const hcl_aq = (substances["HCl_aq"] || 0)
     const hasIndicator = (substances["Indicator"] || 0) > 0.01
@@ -51,7 +43,6 @@
     sorted.forEach(([name, amount]) => {
       const meta = SUBSTANCES[name] || { color: "128, 128, 128", opacity: 0.5 }
       const layerHeight = (amount / totalUnits) * availableHeight
-
       let color = meta.color
       let opacity = meta.opacity
 
@@ -61,42 +52,22 @@
       }
 
       ctx.fillStyle = `rgba(${color}, ${opacity})`
-      ctx.fillRect(5, currentY - layerHeight, width - 10, layerHeight)
-
-      // Interface shimmer
-      if (state.reactionIntensity > 0.1) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.1 * state.reactionIntensity})`
-        ctx.fillRect(5, currentY - layerHeight - 1, width - 10, 2)
-      }
-
+      ctx.fillRect(2, currentY - layerHeight, width - 4, layerHeight)
       currentY -= layerHeight
     })
 
     // 4. Reaction Effects (Bubbles)
     if (state.reactionIntensity > 0.01) {
-      const bubbleCount = Math.floor(state.reactionIntensity * 20)
+      const bubbleCount = Math.floor(state.reactionIntensity * 15)
       for (let i = 0; i < bubbleCount; i++) {
-        const bx = 10 + Math.random() * (width - 20)
-        const by = height - 10 - Math.random() * availableHeight
-        const br = 1 + Math.random() * 2
-
+        const bx = 5 + Math.random() * (width - 10)
+        const by = height - 5 - Math.random() * availableHeight
+        const br = 0.5 + Math.random() * 1.5
         ctx.beginPath()
         ctx.arc(bx, by, br, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 * state.reactionIntensity})`
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * state.reactionIntensity})`
         ctx.fill()
       }
-    }
-
-    // 5. Heat Glow (based on temp)
-    const tempDiff = Math.max(0, state.temperatureC - AMBIENT_TEMPERATURE)
-    if (tempDiff > 5) {
-      const glow = Math.min(0.3, tempDiff / 100)
-      ctx.shadowBlur = 15 * glow
-      ctx.shadowColor = `rgba(255, 100, 0, ${glow})`
-      ctx.strokeStyle = `rgba(255, 50, 0, ${glow})`
-      ctx.lineWidth = 4
-      ctx.strokeRect(2, 2, width - 4, height - 4)
-      ctx.shadowBlur = 0
     }
 
     animationFrame = requestAnimationFrame(render)
@@ -110,16 +81,24 @@
 </script>
 
 <div class="glass-container">
-  <canvas bind:this={canvas} width="100" height="200"></canvas>
+  <canvas 
+    bind:this={canvas} 
+    width="100" 
+    height="200"
+    style="mask-image: url({item.imageUrl}); -webkit-mask-image: url({item.imageUrl});"
+  ></canvas>
+
+  {#if item.imageUrl}
+    <img src={item.imageUrl} alt="" class="glass-sprite" />
+  {/if}
+
   <div class="label-under">
     <div class="name">{item.name}</div>
     <div class="temp" class:hot={item.state.temperatureC > 40}>
       {item.state.temperatureC.toFixed(1)}°C
     </div>
     <div class="capacity">
-      {Object.values(item.state.substances)
-        .reduce((a, b) => a + b, 0)
-        .toFixed(1)} / {item.state.maxCapacity}
+      {Object.values(item.state.substances).reduce((a, b) => a + b, 0).toFixed(1)} / {item.state.maxCapacity}
     </div>
   </div>
 </div>
@@ -131,13 +110,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative; /* Necesar pentru poziționarea absolută a sprite-ului */
   }
+
   canvas {
     width: 100%;
     height: 100%;
-    border-radius: 0 0 10px 10px;
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent !important;
+    /* Masca face ca lichidul să aibă forma sticlei */
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
   }
+
+  .glass-sprite {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none; /* Să poți da click prin imagine pe obiect */
+    z-index: 10;
+    /* mix-blend-mode: multiply; -> opțional, dacă vrei ca reflexiile sprite-ului să se combine cu lichidul */
+  }
+
   .label-under {
     position: absolute;
     top: 105%;
@@ -147,7 +147,7 @@
     background: rgba(255, 255, 255, 0.8);
     padding: 4px;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
   }
   .name {
     font-weight: bold;
