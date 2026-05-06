@@ -18,6 +18,16 @@ reacţii exoterme ∆H &lt; O </span>, iar cel în care sistemul absoarbe căldu
 <span class = "highlight"> ∆H &gt; O se numesc reacţii endoterme </span>.
 </p>
 
+<div class = "exo-endo-container">
+    <svg viewBox = "0 0 1350 450" class = "ecuatie-svg">
+        <image href = "/design/teorie_ilustratii/caldura_1350_450.png" width = "1350" height = "450" />
+
+        <text x = "330" y = "420" text-anchor = "middle" class = "svg-label">Absorbție de căldură</text>
+        <text x = "1020" y = "420" text-anchor = "middle" class = "svg-label">Degajare de căldură</text>
+    </svg>
+</div>
+
+
 <!-- Descriere lucrarii -->
  <br>
 <h1><span class = "highlight"> Determinarea entalpiei de utilizare </span></h1>
@@ -55,17 +65,29 @@ entalpia de neutralizare este mai mică, datorită energiei consumate pentru dis
 <!-- Scopul lucrarii -->
 <br>
 <h2><span class = "highlight">Scopul lucrării:</span></h2>
-<p class = "indent_paragraph">Determinăm entalpia de neutralizare pentru următoarele reacţii:</p>
+<p class = "indent_paragraph">În cadrul acestei lucrări noi vom lucra cu următorul tip de reacție de neutralizare:</p>
+<div class = ecuatie-container>
+    <svg viewBox = "0 0 1125 450" class = "ecuatie-svg">
+        <image href = "/design/teorie_ilustratii/reactii_1125_450.png" width = "1125" height = "450" />
+
+        <text x = "105" y = "420" text-anchor = "middle" class = "svg-label">Acid</text>
+        <text x = "432" y = "420" text-anchor = "middle" class = "svg-label">Bază</text>
+        <text x = "715" y = "420" text-anchor = "middle" class = "svg-label">Apă</text>
+        <text x = "1025" y = "420" text-anchor = "middle" class = "svg-label">Sare</text>
+    </svg>
+</div>
+
+<p class = "indent_paragraph">Concret, vom avea următoarele reacții și substanțe:</p>
 <center class = "formula">
-    a) HCl + NaOH → NaCl + H<sub>2</sub>O &emsp;&emsp;(3)
+    a) HCl + NaOH → H<sub>2</sub>O + NaCl &emsp;&emsp;(3)
 </center>
 <center class = "formula">
     b) H<sub>2</sub>SO<sub>4</sub> + 2NaOH → 
-    Na<sub>2</sub>SO<sub>4</sub> + 2H<sub>2</sub>O &emsp;&emsp;(4)
+    2H<sub>2</sub>O + Na<sub>2</sub>SO<sub>4</sub> &emsp;&emsp;(4)
 </center>
 <center class = "formula">
     c) HCl + NH<sub>4</sub>OH → 
-    NH<sub>4</sub>Cl + H<sub>2</sub>O &emsp;&emsp;(5)
+    H<sub>2</sub>O + NH<sub>4</sub>Cl &emsp;&emsp;(5)
 </center>
 
 <!-- Aparatura si substante-->
@@ -125,6 +147,29 @@ realizează mişcând cu grijă sistemul pentru uniformizarea temperaturii.
     /*Formatarea formule*/
     .formula{
         font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .ecuatie-container {
+        width: 100%;
+        max-width: 1125px;
+        margin: 2rem auto;
+    }
+
+    .exo-endo-container{
+        width: 100%;
+        max-width: 1350px;
+        margin: 2rem auto;
+    }
+
+    .ecuatie-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .svg-label {
+        font-size: 2rem; 
         font-weight: bold;
     }
 
