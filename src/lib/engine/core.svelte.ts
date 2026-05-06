@@ -1,5 +1,6 @@
 import { Item, type Position } from "./item.svelte"
 import { intersects, overlaps, getItemHeightPercent } from "./geometry"
+import { MainGlassTemperatureGraph } from "./main-glass-temperature-graph.svelte"
 
 export type EngineState = "idle" | "carrying" | "pouring"
 
@@ -16,6 +17,7 @@ export class Engine {
   pourTargetIndex: number | null = $state(null)
   pouringAmount: number = $state(0)
   timeScale: number = $state(1)
+  mainGlassGraph: MainGlassTemperatureGraph = new MainGlassTemperatureGraph()
 
   private carryOffset: Position = { x: 0, y: 0 }
   private pourAnimationId: number | null = null
@@ -23,6 +25,16 @@ export class Engine {
   private lastTickTimestamp: number = 0
   private lastPourTimestamp: number = 0
   private pourStartedThisMousedown: boolean = false
+
+  private simulationTimeSec: number = 0
+
+  resetMainGlassTemperatureHistory() {
+    this.mainGlassGraph.reset(this.simulationTimeSec)
+  }
+
+  toggleMainGlassGraphPause() {
+    this.mainGlassGraph.togglePause()
+  }
 
   constructor(items: Item<any>[]) {
     this.items = items
@@ -52,7 +64,11 @@ export class Engine {
       this.stopEngineTick()
       Object.entries(handlers).forEach(([evt, fn]) => {
         const target = evt === "scroll" ? window : document
-        target.removeEventListener(evt, fn as any, evt === "scroll" ? true : false)
+        target.removeEventListener(
+          evt,
+          fn as any,
+          evt === "scroll" ? true : false,
+        )
       })
     }
   }
@@ -264,14 +280,28 @@ export class Engine {
       this.lastTickTimestamp = now
 
       const scaledDeltaMs = deltaMs * this.timeScale
+      this.simulationTimeSec += scaledDeltaMs / 1000
 
       this.items.forEach((item) => {
         item.tick(item, this, scaledDeltaMs)
       })
 
+      this.recordMainGlassTemperature()
+
       this.engineTickId = requestAnimationFrame(loop)
     }
     this.engineTickId = requestAnimationFrame(loop)
+  }
+
+  private recordMainGlassTemperature() {
+    const mainGlass = this.items.find(
+      (item) => item.kind === "glass" && item.name === "Main Glass",
+    )
+
+    if (!mainGlass) return
+
+    const temperatureC = Number(mainGlass.state?.temperatureC)
+    this.mainGlassGraph.record(this.simulationTimeSec, temperatureC)
   }
 
   private stopEngineTick() {

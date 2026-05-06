@@ -4,6 +4,7 @@
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
   import ExperimentTimer from "$lib/engine/ui/ExperimentTimer.svelte"
+  import MainGlassTemperatureChart from "$lib/engine/ui/MainGlassTemperatureChart.svelte"
 
   let parentElement: HTMLElement | null = null
 
@@ -44,6 +45,7 @@
     />
   {/if}
 </section>
+<MainGlassTemperatureChart {engine} />
 <EngineDebugPanel {engine} />
 
 <style>
