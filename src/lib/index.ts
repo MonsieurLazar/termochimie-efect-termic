@@ -12,10 +12,10 @@ export type SubstanceMeta = {
   opacity: number
 }
 
-export const SUBSTANCES: Record<string, SubstanceMeta> = {
-  NaOH: { color: "255, 200, 200", density: 2.13, opacity: 0.9 }, // pellets
+export const SUBSTANCES: Record<string, SubstanceMeta> = {//substantele
+  NaOH: { color: "255, 100, 100", density: 2.13, opacity: 0.9 }, // pellets
   HCl: { color: "200, 255, 200", density: 1.18, opacity: 0.5 },
-  H2O: { color: "0, 200, 255", density: 1.0, opacity: 0.3 }, 
+  H2O: { color: "0, 100, 155", density: 1.0, opacity: 0.6 }, 
   NaOH_aq: { color: "255, 100, 0", density: 1.05, opacity: 0.6 },
   HCl_aq: { color: "100, 255, 0", density: 1.05, opacity: 0.6 },
   NaCl_aq: { color: "200, 200, 200", density: 1.1, opacity: 0.4 },
@@ -29,22 +29,16 @@ export type GlassState = {
   maxCapacity: number
 }
 
-const createInfiniteSource = (
-  name: string,
-  recipe: Record<string, number>,
-  x: number,
-  y: number,
-  color: string,
-) =>
+const createInfiniteSource = (name: string, recipe: Record<string, number>, x: number,  y: number,  color: string, imageUrl: string) =>
   new Item<any>(
     "infinite",
     name,
     { substances: recipe, temperatureC: AMBIENT_TEMPERATURE },
     { x, y },
-    { width: 10, aspectRatio: 1 },
+    { width: 13, aspectRatio: 1 },
     undefined,
-    () =>
-      `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
+    () => "",
+     // `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
     undefined,
     (_, target, __, deltaMs) => {
       if (target.kind === "glass" && deltaMs) {
@@ -78,9 +72,11 @@ const createInfiniteSource = (
       )
       return targetTotal < targetState.maxCapacity ? "continuous" : false
     },
+    imageUrl,
+    color
   )
 
-const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
+const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imageUrl: string, color: string = "", width: number = 15) =>
   new Item<GlassState>(
     "glass",
     name,
@@ -91,7 +87,7 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
       maxCapacity,
     },
     { x, y },
-    { width: 7, aspectRatio: 0.5 },
+    { width, aspectRatio: 1 },
     GlassRenderer as any,
     undefined,
     (self, engine, deltaMs) => {
@@ -186,16 +182,22 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100) =>
       if (target.kind === "spalatorie") return "instant"
       return false
     },
+    imageUrl,
+    color
   )
 
 export const engine = new Engine([
-  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.1, H2O: 0.9 }, 5, 10, "#fee2e2"),
-  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.1, H2O: 0.9 }, 15, 30, "#dcfce7"),
-  createInfiniteSource("Distilled H2O", { H2O: 1 }, 5, 50, "#3b82f6"),
-  createInfiniteSource("Phenolphthalein", { Indicator: 0.01, H2O: 0.99 }, 15, 70, "#fdf4ff"),
+  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 1, 2, "#ffbdbd", "/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.3, H2O: 0.7 }, 1, 65, "#b6ffd0","/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("Distilled H2O", { H2O: 1 }, 15, 2, "#7accff","/design/300x300/apa_distilata_300.png"),
+  createInfiniteSource("Phenolphthalein", { Indicator: 0.01, H2O: 0.99 }, 1, 35,  "#fdf4ff", "/design/300x300/subst_inf_300.png",),
 
-  createGlass("Main Glass", 30, 50, 150),
-  createGlass("Secondary Glass", 50, 50, 100),
+  createGlass("Main Glass", 30, 50, 150, "/design/300x300/calorimetru_300.png", "", 15),
+  createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
+  createGlass("Ep1", 35, 1, 100, "/design/300x300/eprubeta_300.png", "", 6),
+  createGlass("Ep2", 48, 1, 100, "/design/300x300/eprubeta_300.png", "", 6),
+  createGlass("Ep3", 61, 1, 100, "/design/300x300/eprubeta_300.png", "", 6),
+
 
   new Item<GlassState>(
     "spalatorie",
@@ -206,11 +208,11 @@ export const engine = new Engine([
       reactionIntensity: 0,
       maxCapacity: 0,
     },
-    { x: 80, y: 50 },
-    { width: 10, aspectRatio: 0.5 },
+    { x: 65, y: 20 },
+    { width: 20, aspectRatio: 1 },
     undefined,
-    () =>
-      `background-color: #3b82f6; border: 2px solid #2563eb; border-radius: 8px;`,
+    () => "",
+      //`background-color: #3b82f6; border: 2px solid #2563eb; border-radius: 8px;`,
     undefined,
     (_, target) => {
       if (target.kind === "glass") {
@@ -220,5 +222,6 @@ export const engine = new Engine([
       }
     },
     (_, target) => (target.kind === "glass" ? "instant" : false),
+    "/design/300x300/residuu_300.png",
   ),
 ])

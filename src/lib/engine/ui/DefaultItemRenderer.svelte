@@ -5,15 +5,54 @@
   let { item, engine }: { item: Item<any>; engine: Engine } = $props()
 </script>
 
-<div class="item-body" style={item.draw(item.state)}></div>
-<div class="item-label">{item.name}</div>
+<div class="render-container">
+  <div 
+    class="bottle-fill" 
+    style="background-color: {item.color};
+           mask-image: url({item.imageUrl}); 
+           -webkit-mask-image: url({item.imageUrl});"
+  >
+  </div>
 
+  {#if item.imageUrl}
+    <img src={item.imageUrl} alt={item.name} class="bottle-overlay" />
+  {/if}
+</div>
+
+<div class="item-label">{item.name} </div>
 <style>
-  .item-body {
+  .render-container {
     width: 100%;
     height: 100%;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+
+  .bottle-fill {
+    position: absolute;
+    inset: 0;
+    /* Proprietăți critice pentru ca masca să funcționeze */
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+
+  .bottle-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Păstrează detaliile desenului (conturul) peste culoare */
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
   .item-label {
     position: absolute;
     top: 105%;
@@ -22,7 +61,6 @@
     white-space: nowrap;
     font-size: 0.8rem;
     font-weight: bold;
-    pointer-events: none;
     background: rgba(255, 255, 255, 0.7);
     padding: 2px 4px;
     border-radius: 4px;
