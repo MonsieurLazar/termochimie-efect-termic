@@ -13,6 +13,9 @@
   const padRight = 16
   const padTop = 16
   const padBottom = 28
+  const hoverTagWidth = 144
+  const hoverTagHeight = 24
+  const hoverTagGap = 10
   const svgId = `main-glass-chart-${Math.random().toString(36).slice(2)}`
 
   let points = $derived(engine.mainGlassGraph.history)
@@ -94,6 +97,25 @@
       timeSec: p.timeSec,
       tempC: p.tempC,
     }
+  })
+
+  let hoveredTagPosition = $derived.by(() => {
+    if (!hoveredPoint) return null
+
+    const halfTagWidth = hoverTagWidth / 2
+    const minX = padLeft + halfTagWidth
+    const maxX = width - padRight - halfTagWidth
+    const x = Math.max(minX, Math.min(maxX, hoveredPoint.x))
+
+    const preferredAboveY = hoveredPoint.y - hoverTagGap - hoverTagHeight
+    const minY = padTop + 2
+    const maxY = height - padBottom - hoverTagHeight - 2
+    const y =
+      preferredAboveY >= minY
+        ? preferredAboveY
+        : Math.min(maxY, hoveredPoint.y + hoverTagGap)
+
+    return { x, y }
   })
 
   function handleMouseMove(event: MouseEvent) {
@@ -180,17 +202,17 @@
         class="hover-line"
       />
       <circle cx={hoveredPoint.x} cy={hoveredPoint.y} r="4" class="hover-dot" />
-      <g transform={`translate(${hoveredPoint.x}, ${hoveredPoint.y - 14})`}>
+      <g transform={`translate(${hoveredTagPosition?.x ?? hoveredPoint.x}, ${hoveredTagPosition?.y ?? hoveredPoint.y})`}>
         <rect
-          x="-44"
-          y="-18"
-          width="88"
-          height="14"
+          x={-hoverTagWidth / 2}
+          y="0"
+          width={hoverTagWidth}
+          height={hoverTagHeight}
           rx="2"
           ry="2"
           class="hover-tag-bg"
         />
-        <text x="0" y="-8" text-anchor="middle" class="hover-tag-text">
+        <text x="0" y={hoverTagHeight / 2 + 5} text-anchor="middle" class="hover-tag-text">
           {hoveredPoint.tempC.toFixed(1)}°C
         </text>
       </g>
