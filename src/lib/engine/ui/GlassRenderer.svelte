@@ -94,9 +94,6 @@
 
   <div class="label-under">
     <div class="name">{item.name}</div>
-    <div class="temp" class:hot={item.state.temperatureC > 40}>
-      {item.state.temperatureC.toFixed(1)}°C
-    </div>
     <div class="capacity">
       {Object.values(item.state.substances).reduce((a, b) => a + b, 0).toFixed(1)} / {item.state.maxCapacity}
     </div>
@@ -152,14 +149,6 @@
   .name {
     font-weight: bold;
     font-size: 0.8rem;
-  }
-  .temp {
-    font-size: 0.9rem;
-    color: #444;
-  }
-  .temp.hot {
-    color: #e44d26;
-    font-weight: bold;
   }
   .capacity {
     font-size: 0.7rem;
