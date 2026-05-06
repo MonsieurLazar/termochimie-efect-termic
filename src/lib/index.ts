@@ -193,9 +193,11 @@ const createUiButton = (
   name: string,
   x: number,
   y: number,
-  widget: "graph" | "timer" | "debug",
+  widget: "graph" | "timer" | "debug" | "calculator" | "theory",
 ) =>
-  new Item<{ widget: "graph" | "timer" | "debug" }>(
+  new Item<{
+    widget: "graph" | "timer" | "debug" | "calculator" | "theory"
+  }>(
     "ui-button",
     name,
     { widget },
@@ -254,4 +256,6 @@ export const engine = new Engine([
   createUiButton("Open Graph", 82, 2, "graph"),
   createUiButton("Open Timer", 82, 16, "timer"),
   createUiButton("Open Debug", 82, 30, "debug"),
+  createUiButton("Open Calculator", 82, 44, "calculator"),
+  createUiButton("Open Theory", 82, 58, "theory"),
 ])

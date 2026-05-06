@@ -3,7 +3,7 @@ import { intersects, overlaps, getItemHeightPercent } from "./geometry"
 import { MainGlassTemperatureGraph } from "./main-glass-temperature-graph.svelte"
 
 export type EngineState = "idle" | "carrying" | "pouring"
-export type WidgetKey = "graph" | "timer" | "debug"
+export type WidgetKey = "graph" | "timer" | "debug" | "calculator" | "theory"
 
 export class Engine {
   items: Item<any>[] = []
@@ -23,6 +23,8 @@ export class Engine {
     graph: false,
     timer: false,
     debug: false,
+    calculator: false,
+    theory: false,
   })
   isUiInteractionLocked: boolean = $state(false)
 
