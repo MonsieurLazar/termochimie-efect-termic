@@ -53,6 +53,5 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background-color: #f0f0f0;
   }
 </style>

@@ -1,0 +1,5 @@
+Daca aveti probleme legate de dimensiuni/ de cum au iesit obiectele dati dm (le pot modifica/ da resize etc)
+
+Momentan avem:
+
+-eprubeta
