@@ -8,6 +8,7 @@ from PIL import Image
 
 
 ALPHA_THRESHOLD = 8
+PADDING_PX = 2
 
 
 def crop_transparent_pixels(png_path: Path) -> bool:
@@ -21,10 +22,18 @@ def crop_transparent_pixels(png_path: Path) -> bool:
             return False
 
         cropped = rgba.crop(bounding_box)
-        if cropped.size == image.size:
+
+        padded = Image.new(
+            "RGBA",
+            (cropped.width + PADDING_PX * 2, cropped.height + PADDING_PX * 2),
+            (0, 0, 0, 0),
+        )
+        padded.paste(cropped, (PADDING_PX, PADDING_PX))
+
+        if padded.size == rgba.size and padded.tobytes() == rgba.tobytes():
             return False
 
-        cropped.save(png_path)
+        padded.save(png_path)
         return True
 
 

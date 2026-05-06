@@ -99,9 +99,14 @@ export class Item<T> {
         width: ${this.dimension.width}%;
         aspect-ratio: ${this.dimension.aspectRatio};
         ${!this.isMoving ? "transition: left 0.2s, top 0.2s;" : ""}
-        ${this.isHovered ? "outline: 2px solid blue;" : ""}
         ${this.isMoving ? "z-index: 1000;" : ""}
         ${this.draw ? this.draw(this.state) : ""}
         `
+  }
+
+  getDisplayImageUrl() {
+    if (!this.imageUrl || !this.isHovered) return this.imageUrl
+    if (!this.imageUrl.endsWith(".png")) return this.imageUrl
+    return this.imageUrl.replace(/\.png$/i, "_hover.png")
   }
 }

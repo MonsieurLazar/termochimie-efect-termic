@@ -31,12 +31,12 @@ export type GlassState = {
 }
 
 const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
-  "/design/300x300/subst_inf_300.png": { width: 147, height: 216 },
-  "/design/300x300/apa_distilata_300.png": { width: 111, height: 276 },
-  "/design/300x300/calorimetru_300.png": { width: 117, height: 147 },
-  "/design/300x300/erlenmeyer_300.png": { width: 156, height: 189 },
-  "/design/300x300/eprubeta_300.png": { width: 102, height: 282 },
-  "/design/300x300/residuu_300.png": { width: 117, height: 195 },
+  "/design/300x300/subst_inf_300.png": { width: 151, height: 220 },
+  "/design/300x300/apa_distilata_300.png": { width: 115, height: 280 },
+  "/design/300x300/calorimetru_300.png": { width: 121, height: 151 },
+  "/design/300x300/erlenmeyer_300.png": { width: 160, height: 193 },
+  "/design/300x300/eprubeta_300.png": { width: 106, height: 286 },
+  "/design/300x300/residuu_300.png": { width: 121, height: 199 },
 }
 
 const BASE_SPRITE_PATH = "/design/300x300/calorimetru_300.png"

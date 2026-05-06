@@ -5,6 +5,7 @@
   import { SUBSTANCES, type GlassState, AMBIENT_TEMPERATURE } from "../../index"
 
   let { item, engine }: { item: Item<GlassState>; engine: Engine } = $props()
+  const imageUrl = $derived(item.getDisplayImageUrl())
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
@@ -85,11 +86,11 @@
     bind:this={canvas} 
     width="100" 
     height="200"
-    style="mask-image: url({item.imageUrl}); -webkit-mask-image: url({item.imageUrl});"
+    style="mask-image: url({imageUrl}); -webkit-mask-image: url({imageUrl});"
   ></canvas>
 
-  {#if item.imageUrl}
-    <img src={item.imageUrl} alt="" class="glass-sprite" />
+  {#if imageUrl}
+    <img src={imageUrl} alt="" class="glass-sprite" />
   {/if}
 
   <div class="label-under">

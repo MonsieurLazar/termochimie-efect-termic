@@ -3,18 +3,19 @@
   import type { Engine } from "../core.svelte"
 
   let { item, engine }: { item: Item<any>; engine: Engine } = $props()
+  const imageUrl = $derived(item.getDisplayImageUrl())
 </script>
 
 <div class="render-container">
   {#if item.color}
     <div
       class="bottle-fill"
-      style="background-color: {item.color}; mask-image: url({item.imageUrl}); -webkit-mask-image: url({item.imageUrl});"
+      style="background-color: {item.color}; mask-image: url({imageUrl}); -webkit-mask-image: url({imageUrl});"
     ></div>
   {/if}
 
-  {#if item.imageUrl}
-    <img src={item.imageUrl} alt={item.name} class="bottle-overlay" />
+  {#if imageUrl}
+    <img src={imageUrl} alt={item.name} class="bottle-overlay" />
   {/if}
 </div>
 
