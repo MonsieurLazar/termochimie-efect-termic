@@ -247,17 +247,26 @@ export class Engine {
   }
 
   private handleCarriedClick() {
+    let shouldReturnToInitialPosition = false
+
     if (
       this.hoveredItemIndex !== null &&
       this.hoveredItemIndex !== this.carriedItemIndex
     ) {
+      shouldReturnToInitialPosition = true
       const carried = this.items[this.carriedItemIndex!]
       const target = this.items[this.hoveredItemIndex]
       if (carried.canTransition(carried, target) === "instant") {
         carried.transition(carried, target, (m) => alert(m))
       }
     }
-    this.returnCarriedItem()
+
+    if (shouldReturnToInitialPosition) {
+      this.returnCarriedItem()
+    } else {
+      this.releaseCarriedItem()
+    }
+
     this.engineState = "idle"
   }
 
@@ -297,6 +306,15 @@ export class Engine {
     if (this.carriedItemIndex !== null) {
       const item = this.items[this.carriedItemIndex]
       item.position = structuredClone(item.initialPosition)
+      item.isMoving = false
+    }
+    this.carriedItemIndex = null
+    this.clearHovered()
+  }
+
+  private releaseCarriedItem() {
+    if (this.carriedItemIndex !== null) {
+      const item = this.items[this.carriedItemIndex]
       item.isMoving = false
     }
     this.carriedItemIndex = null
