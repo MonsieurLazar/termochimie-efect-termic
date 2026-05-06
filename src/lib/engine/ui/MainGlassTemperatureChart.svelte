@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Engine } from "../core.svelte"
 
-  let { engine }: { engine: Engine } = $props()
+  let { engine, onClose = () => {} }: { engine: Engine; onClose?: () => void } = $props()
 
   const width = 720
   const height = 240
@@ -135,6 +135,7 @@
   <div class="header-row">
     <div class="chart-title">MAIN GLASS TEMPERATURE</div>
     <div class="toolbar">
+      <button type="button" class="close-btn" onclick={onClose}>X</button>
       <button type="button" class="pause-btn" onclick={togglePauseGraph}>
         {engine.mainGlassGraph.isPaused ? "RESUME GRAPH" : "PAUSE GRAPH"}
       </button>
@@ -199,7 +200,7 @@
 
 <style>
   .chart-wrap {
-    margin-top: 1rem;
+    margin-top: 0;
     border: 4px solid #23364a;
     background: #d7e7f4;
     box-shadow: 6px 6px 0 #8aa3ba;
@@ -226,6 +227,26 @@
   .toolbar {
     display: flex;
     gap: 0.35rem;
+  }
+
+  .close-btn {
+    border: 3px solid #23364a;
+    background: #ffc7c7;
+    color: #5a1515;
+    padding: 0.2rem 0.45rem;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #8a4a4a;
+  }
+
+  .close-btn:hover {
+    background: #ffd6d6;
+  }
+
+  .close-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #8a4a4a;
   }
 
   .pause-btn {

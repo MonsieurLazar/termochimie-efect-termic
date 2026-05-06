@@ -3,6 +3,7 @@ import { intersects, overlaps, getItemHeightPercent } from "./geometry"
 import { MainGlassTemperatureGraph } from "./main-glass-temperature-graph.svelte"
 
 export type EngineState = "idle" | "carrying" | "pouring"
+export type WidgetKey = "graph" | "timer" | "debug"
 
 export class Engine {
   items: Item<any>[] = []
@@ -18,6 +19,12 @@ export class Engine {
   pouringAmount: number = $state(0)
   timeScale: number = $state(1)
   mainGlassGraph: MainGlassTemperatureGraph = new MainGlassTemperatureGraph()
+  widgetVisibility: Record<WidgetKey, boolean> = $state({
+    graph: false,
+    timer: false,
+    debug: false,
+  })
+  isUiInteractionLocked: boolean = $state(false)
 
   private carryOffset: Position = { x: 0, y: 0 }
   private pourAnimationId: number | null = null
@@ -34,6 +41,29 @@ export class Engine {
 
   toggleMainGlassGraphPause() {
     this.mainGlassGraph.togglePause()
+  }
+
+  openWidget(widget: WidgetKey) {
+    this.widgetVisibility[widget] = true
+  }
+
+  closeWidget(widget: WidgetKey) {
+    this.widgetVisibility[widget] = false
+  }
+
+  setUiInteractionLock(locked: boolean) {
+    this.isUiInteractionLocked = locked
+  }
+
+  clearHoveredState() {
+    this.clearHovered()
+  }
+
+  isItemVisible(item: Item<any>) {
+    if (item.kind !== "ui-button") return true
+    const widget = item.state?.widget as WidgetKey | undefined
+    if (!widget) return true
+    return !this.widgetVisibility[widget]
   }
 
   constructor(items: Item<any>[]) {
@@ -85,6 +115,7 @@ export class Engine {
   }
 
   private handleMouseMove(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (!this.parentMetrics.w || !this.parentMetrics.h) return
 
     this.mouseX = Math.max(
@@ -131,6 +162,7 @@ export class Engine {
     const overlapIdx = this.items.findIndex(
       (t, i) =>
         i !== this.carriedItemIndex &&
+        this.isItemVisible(t) &&
         overlaps(item, t, this.parentMetrics.w, this.parentMetrics.h),
     )
 
@@ -144,19 +176,22 @@ export class Engine {
 
   private updateHoverState() {
     this.clearHovered()
-    const hoverIdx = this.items.findIndex((item) =>
-      intersects(
-        this.mouseX,
-        this.mouseY,
-        item,
-        this.parentMetrics.w,
-        this.parentMetrics.h,
-      ),
+    const hoverIdx = this.items.findIndex(
+      (item) =>
+        this.isItemVisible(item) &&
+        intersects(
+          this.mouseX,
+          this.mouseY,
+          item,
+          this.parentMetrics.w,
+          this.parentMetrics.h,
+        ),
     )
     if (hoverIdx !== -1) this.markHovered(hoverIdx)
   }
 
   private handleMouseDown(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (
       this.engineState === "carrying" &&
       this.hoveredItemIndex !== null &&
@@ -173,6 +208,7 @@ export class Engine {
   }
 
   private handleMouseUp(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (this.engineState === "pouring") {
       this.stopPouring()
       this.returnCarriedItem()
@@ -181,12 +217,18 @@ export class Engine {
   }
 
   private handleClick(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (this.pourStartedThisMousedown) {
       this.pourStartedThisMousedown = false
       return
     }
 
     if (this.engineState === "idle" && this.hoveredItemIndex !== null) {
+      const hoveredItem = this.items[this.hoveredItemIndex]
+      if (hoveredItem.kind === "ui-button") {
+        hoveredItem.onClick(hoveredItem, this)
+        return
+      }
       this.pickUp(this.hoveredItemIndex)
     } else if (this.engineState === "carrying") {
       this.handleCarriedClick()

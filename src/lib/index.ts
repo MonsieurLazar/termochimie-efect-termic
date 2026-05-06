@@ -1,6 +1,7 @@
 import { Item } from "./engine/item.svelte"
 import { Engine } from "./engine/core.svelte"
 import GlassRenderer from "./engine/ui/GlassRenderer.svelte"
+import EngineButtonRenderer from "./engine/ui/EngineButtonRenderer.svelte"
 
 export const TRANSFER_RATE = 5 // units per second
 export const AMBIENT_TEMPERATURE = 25
@@ -72,6 +73,7 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
       )
       return targetTotal < targetState.maxCapacity ? "continuous" : false
     },
+    undefined,
     imageUrl,
     color
   )
@@ -182,8 +184,31 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imag
       if (target.kind === "spalatorie") return "instant"
       return false
     },
+    undefined,
     imageUrl,
     color
+  )
+
+const createUiButton = (
+  name: string,
+  x: number,
+  y: number,
+  widget: "graph" | "timer" | "debug",
+) =>
+  new Item<{ widget: "graph" | "timer" | "debug" }>(
+    "ui-button",
+    name,
+    { widget },
+    { x, y },
+    { width: 11, aspectRatio: 1.8 },
+    EngineButtonRenderer as any,
+    () => "",
+    undefined,
+    undefined,
+    () => false,
+    (_, engine) => {
+      engine.openWidget(widget)
+    },
   )
 
 export const engine = new Engine([
@@ -222,6 +247,11 @@ export const engine = new Engine([
       }
     },
     (_, target) => (target.kind === "glass" ? "instant" : false),
+    undefined,
     "/design/300x300/residuu_300.png",
   ),
+
+  createUiButton("Open Graph", 82, 2, "graph"),
+  createUiButton("Open Timer", 82, 16, "timer"),
+  createUiButton("Open Debug", 82, 30, "debug"),
 ])

@@ -38,6 +38,7 @@ export class Item<T> {
     thisItem: Item<T>,
     targetItem: Item<any>,
   ) => TransitionType = () => "instant" 
+  onClick: (thisItem: Item<T>, engine: any) => void = () => {}
   isMoving: boolean = $state(false)
   isHovered: boolean = $state(false)
   imageUrl?: string = $state("")
@@ -66,6 +67,7 @@ export class Item<T> {
       thisItem: Item<T>,
       targetItem: Item<any>,
     ) => TransitionType,
+    onClick?: (thisItem: Item<T>, engine: any) => void,
     imageUrl?: string,
     color?: string
   ) {
@@ -83,6 +85,7 @@ export class Item<T> {
     this.tick = tick || this.tick
     this.transition = transition || this.transition
     this.canTransition = canTransition || this.canTransition
+    this.onClick = onClick || this.onClick
     this.isMoving = false
     this.isHovered = false
   }

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte"
 
-  let { timeScale = $bindable(1) }: { timeScale: number } = $props()
+  let {
+    timeScale = $bindable(1),
+    onClose = () => {},
+  }: { timeScale: number; onClose?: () => void } = $props()
 
   let experimentStartTime = new Date()
   let simulatedMs = $state(0)
@@ -26,7 +29,10 @@
 <section class="timer-widget" aria-label="Experiment timer">
   <div class="header-row">
     <div class="widget-title">EXPERIMENT TIMER</div>
-    <div class="clock">{simulatedTime}</div>
+    <div class="header-actions">
+      <div class="clock">{simulatedTime}</div>
+      <button type="button" class="close-btn" onclick={onClose}>X</button>
+    </div>
   </div>
 
   <div class="speed-controls">
@@ -43,7 +49,7 @@
 
 <style>
   .timer-widget {
-    margin-top: 1rem;
+    margin-top: 0;
     border: 4px solid #23364a;
     background: #d7e7f4;
     box-shadow: 6px 6px 0 #8aa3ba;
@@ -58,6 +64,12 @@
     gap: 0.75rem;
     flex-wrap: wrap;
     margin-bottom: 0.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 
   .widget-title {
@@ -77,6 +89,27 @@
     box-shadow: 2px 2px 0 #8aa3ba;
     padding: 0.2rem 0.45rem;
     line-height: 1;
+  }
+
+  .close-btn {
+    border: 3px solid #23364a;
+    background: #ffc7c7;
+    color: #5a1515;
+    padding: 0.2rem 0.45rem;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #8a4a4a;
+    line-height: 1;
+  }
+
+  .close-btn:hover {
+    background: #ffd6d6;
+  }
+
+  .close-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #8a4a4a;
   }
 
   .speed-controls {

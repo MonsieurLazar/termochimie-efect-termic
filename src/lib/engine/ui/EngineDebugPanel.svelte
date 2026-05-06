@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Engine } from "../core.svelte"
 
-  let { engine }: { engine: Engine } = $props()
+  let { engine, onClose = () => {} }: { engine: Engine; onClose?: () => void } =
+    $props()
 </script>
 
 <section class="debug-widget" aria-label="Engine debug stats">
-  <div class="widget-title">DEBUG STATS</div>
+  <div class="header-row">
+    <div class="widget-title">DEBUG STATS</div>
+    <button type="button" class="close-btn" onclick={onClose}>X</button>
+  </div>
 
   <div class="stats-grid">
     <div><strong>State:</strong> {engine.engineState}</div>
@@ -28,12 +32,15 @@
 
 <style>
   .debug-widget {
-    margin-top: 1rem;
+    margin-top: 0;
     border: 4px solid #23364a;
     background: #d7e7f4;
     box-shadow: 6px 6px 0 #8aa3ba;
     padding: 0.75rem;
     max-width: 760px;
+    max-height: min(36vh, 320px);
+    display: flex;
+    flex-direction: column;
   }
 
   .widget-title {
@@ -41,7 +48,34 @@
     letter-spacing: 1px;
     text-shadow: 1px 1px 0 #ffffff;
     font-size: 0.95rem;
+  }
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 0.5rem;
+  }
+
+  .close-btn {
+    border: 3px solid #23364a;
+    background: #ffc7c7;
+    color: #5a1515;
+    padding: 0.2rem 0.45rem;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #8a4a4a;
+    line-height: 1;
+  }
+
+  .close-btn:hover {
+    background: #ffd6d6;
+  }
+
+  .close-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #8a4a4a;
   }
 
   .stats-grid {
@@ -58,6 +92,11 @@
     background: #f5fbff;
     margin-top: 0.4rem;
     box-shadow: 2px 2px 0 #8aa3ba;
+  }
+
+  .items-list {
+    overflow-y: auto;
+    padding-right: 0.2rem;
   }
 
   .items-list summary {
