@@ -30,8 +30,6 @@
   class:is-pouring={engine.engineState === "pouring"}
   style:cursor
 >
-  <ExperimentTimer bind:timeScale={engine.timeScale} />
-
   {#each engine.items as item}
     <div style={item.getStyles()}>
       <item.renderComponent {item} {engine} />
@@ -46,6 +44,7 @@
   {/if}
 </section>
 <MainGlassTemperatureChart {engine} />
+<ExperimentTimer bind:timeScale={engine.timeScale} />
 <EngineDebugPanel {engine} />
 
 <style>
