@@ -6,13 +6,12 @@
 </script>
 
 <div class="render-container">
-  <div 
-    class="bottle-fill" 
-    style="background-color: {item.color};
-           mask-image: url({item.imageUrl}); 
-           -webkit-mask-image: url({item.imageUrl});"
-  >
-  </div>
+  {#if item.color}
+    <div
+      class="bottle-fill"
+      style="background-color: {item.color}; mask-image: url({item.imageUrl}); -webkit-mask-image: url({item.imageUrl});"
+    ></div>
+  {/if}
 
   {#if item.imageUrl}
     <img src={item.imageUrl} alt={item.name} class="bottle-overlay" />
@@ -33,7 +32,8 @@
   .bottle-fill {
     position: absolute;
     inset: 0;
-    /* Proprietăți critice pentru ca masca să funcționeze */
+    width: 100%;
+    height: 100%;
     -webkit-mask-size: contain;
     mask-size: contain;
     -webkit-mask-repeat: no-repeat;
@@ -48,8 +48,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* Păstrează detaliile desenului (conturul) peste culoare */
-    mix-blend-mode: multiply;
+    object-position: center;
     pointer-events: none;
   }
 

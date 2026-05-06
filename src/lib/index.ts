@@ -30,13 +30,39 @@ export type GlassState = {
   maxCapacity: number
 }
 
+const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
+  "/design/300x300/subst_inf_300.png": { width: 147, height: 216 },
+  "/design/300x300/apa_distilata_300.png": { width: 111, height: 276 },
+  "/design/300x300/calorimetru_300.png": { width: 117, height: 147 },
+  "/design/300x300/erlenmeyer_300.png": { width: 156, height: 189 },
+  "/design/300x300/eprubeta_300.png": { width: 102, height: 282 },
+  "/design/300x300/residuu_300.png": { width: 117, height: 195 },
+}
+
+const BASE_SPRITE_PATH = "/design/300x300/calorimetru_300.png"
+const BASE_ENGINE_WIDTH_PERCENT = 8
+const PIXEL_TO_PERCENT =
+  BASE_ENGINE_WIDTH_PERCENT / SPRITE_SIZE_PX[BASE_SPRITE_PATH].width
+
+const spriteDimension = (imageUrl: string, fallbackWidthPercent = 10) => {
+  const size = SPRITE_SIZE_PX[imageUrl]
+  if (!size) {
+    return { width: fallbackWidthPercent, aspectRatio: 1 }
+  }
+
+  return {
+    width: Number((size.width * PIXEL_TO_PERCENT).toFixed(2)),
+    aspectRatio: size.width / size.height,
+  }
+}
+
 const createInfiniteSource = (name: string, recipe: Record<string, number>, x: number,  y: number,  color: string, imageUrl: string) =>
   new Item<any>(
     "infinite",
     name,
     { substances: recipe, temperatureC: AMBIENT_TEMPERATURE },
     { x, y },
-    { width: 13, aspectRatio: 1 },
+    spriteDimension(imageUrl, 13),
     undefined,
     () => "",
      // `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
@@ -75,7 +101,7 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
     },
     undefined,
     imageUrl,
-    color
+    ""
   )
 
 const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imageUrl: string, color: string = "", width: number = 15) =>
@@ -89,7 +115,7 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imag
       maxCapacity,
     },
     { x, y },
-    { width, aspectRatio: 1 },
+    spriteDimension(imageUrl, width),
     GlassRenderer as any,
     undefined,
     (self, engine, deltaMs) => {
@@ -236,7 +262,7 @@ export const engine = new Engine([
       maxCapacity: 0,
     },
     { x: 65, y: 20 },
-    { width: 20, aspectRatio: 1 },
+    spriteDimension("/design/300x300/residuu_300.png", 20),
     undefined,
     () => "",
       //`background-color: #3b82f6; border: 2px solid #2563eb; border-radius: 8px;`,

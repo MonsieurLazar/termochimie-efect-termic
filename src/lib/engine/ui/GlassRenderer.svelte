@@ -114,7 +114,6 @@
     width: 100%;
     height: 100%;
     background: transparent !important;
-    /* Masca face ca lichidul să aibă forma sticlei */
     mask-size: contain;
     -webkit-mask-size: contain;
     mask-repeat: no-repeat;
