@@ -26,9 +26,23 @@
 
   const baseWidgetWidthPx = 760
 
-  function getWidgetWidth(widget: WidgetKey) {
+  function getWidgetBaseWidthPx(widget: WidgetKey) {
     const scale = widget === "graph" ? 0.8 : widget === "timer" ? 0.3 : 0.75
-    const widthPx = Math.round(baseWidgetWidthPx * scale)
+    return Math.round(baseWidgetWidthPx * scale)
+  }
+
+  function getWidgetWidthPx(widget: WidgetKey) {
+    return Math.min(getWidgetBaseWidthPx(widget), Math.max(0, window.innerWidth - 16))
+  }
+
+  function getWidgetHeightPx(widget: WidgetKey) {
+    const element = document.getElementById(`widget-${widget}`)
+    if (!element) return 120
+    return Math.max(120, Math.round(element.getBoundingClientRect().height))
+  }
+
+  function getWidgetWidth(widget: WidgetKey) {
+    const widthPx = getWidgetBaseWidthPx(widget)
     return `min(${widthPx}px, calc(100vw - 2rem))`
   }
 
@@ -37,8 +51,10 @@
 
     const onMouseMove = (event: MouseEvent) => {
       if (!dragState) return
-      const maxX = Math.max(8, window.innerWidth - 340)
-      const maxY = Math.max(8, window.innerHeight - 120)
+      const widgetWidth = getWidgetWidthPx(dragState.widget)
+      const widgetHeight = getWidgetHeightPx(dragState.widget)
+      const maxX = Math.max(8, window.innerWidth - widgetWidth - 8)
+      const maxY = Math.max(8, window.innerHeight - widgetHeight - 8)
       widgetPosition[dragState.widget] = {
         x: Math.max(8, Math.min(maxX, event.clientX - dragState.offsetX)),
         y: Math.max(8, Math.min(maxY, event.clientY - dragState.offsetY)),
@@ -151,6 +167,7 @@
 
 {#if engine.widgetVisibility.graph}
   <div
+    id="widget-graph"
     class="desktop-window"
     role="dialog"
     aria-label="Graph widget"
@@ -162,20 +179,24 @@
     onmouseenter={beginWidgetHover}
     onmouseleave={endWidgetHover}
   >
-    <button
-      type="button"
-      class="desktop-tab"
-      class:is-dragging={dragState?.widget === "graph"}
-      onclick={(event) => startDrag("graph", event)}
-    >
-      Graph
-    </button>
-    <MainGlassTemperatureChart {engine} onClose={() => closeWidget("graph")} />
+    <div class="desktop-topbar">
+      <button
+        type="button"
+        class="desktop-tab"
+        class:is-dragging={dragState?.widget === "graph"}
+        onclick={(event) => startDrag("graph", event)}
+      >
+        Graph
+      </button>
+      <button type="button" class="desktop-close" onclick={() => closeWidget("graph")}>X</button>
+    </div>
+    <MainGlassTemperatureChart {engine} showCloseButton={false} />
   </div>
 {/if}
 
 {#if engine.widgetVisibility.timer}
   <div
+    id="widget-timer"
     class="desktop-window"
     role="dialog"
     aria-label="Timer widget"
@@ -187,23 +208,27 @@
     onmouseenter={beginWidgetHover}
     onmouseleave={endWidgetHover}
   >
-    <button
-      type="button"
-      class="desktop-tab"
-      class:is-dragging={dragState?.widget === "timer"}
-      onclick={(event) => startDrag("timer", event)}
-    >
-      Timer
-    </button>
+    <div class="desktop-topbar">
+      <button
+        type="button"
+        class="desktop-tab"
+        class:is-dragging={dragState?.widget === "timer"}
+        onclick={(event) => startDrag("timer", event)}
+      >
+        Timer
+      </button>
+      <button type="button" class="desktop-close" onclick={() => closeWidget("timer")}>X</button>
+    </div>
     <ExperimentTimer
       bind:timeScale={engine.timeScale}
-      onClose={() => closeWidget("timer")}
+      showCloseButton={false}
     />
   </div>
 {/if}
 
 {#if engine.widgetVisibility.debug}
   <div
+    id="widget-debug"
     class="desktop-window"
     role="dialog"
     aria-label="Debug widget"
@@ -215,15 +240,18 @@
     onmouseenter={beginWidgetHover}
     onmouseleave={endWidgetHover}
   >
-    <button
-      type="button"
-      class="desktop-tab"
-      class:is-dragging={dragState?.widget === "debug"}
-      onclick={(event) => startDrag("debug", event)}
-    >
-      Debug
-    </button>
-    <EngineDebugPanel {engine} onClose={() => closeWidget("debug")} />
+    <div class="desktop-topbar">
+      <button
+        type="button"
+        class="desktop-tab"
+        class:is-dragging={dragState?.widget === "debug"}
+        onclick={(event) => startDrag("debug", event)}
+      >
+        Debug
+      </button>
+      <button type="button" class="desktop-close" onclick={() => closeWidget("debug")}>X</button>
+    </div>
+    <EngineDebugPanel {engine} showCloseButton={false} />
   </div>
 {/if}
 
@@ -247,6 +275,13 @@
     overflow-y: auto;
   }
 
+  .desktop-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
   .desktop-tab {
     border: 3px solid #23364a;
     border-bottom: none;
@@ -260,10 +295,27 @@
     line-height: 1;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+    flex: 1;
+    text-align: left;
   }
 
   .desktop-tab:active,
   .desktop-tab.is-dragging {
     cursor: grabbing;
+  }
+
+  .desktop-close {
+    border: 3px solid #23364a;
+    border-bottom: none;
+    background: #ffc7c7;
+    color: #5a1515;
+    box-shadow: 3px 0 0 #8a4a4a;
+    font: inherit;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    line-height: 1;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
   }
 </style>

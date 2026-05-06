@@ -1,14 +1,19 @@
 <script lang="ts">
   import { Engine } from "../core.svelte"
 
-  let { engine, onClose = () => {} }: { engine: Engine; onClose?: () => void } =
-    $props()
+  let {
+    engine,
+    onClose = () => {},
+    showCloseButton = true,
+  }: { engine: Engine; onClose?: () => void; showCloseButton?: boolean } = $props()
 </script>
 
 <section class="debug-widget" aria-label="Engine debug stats">
   <div class="header-row">
     <div class="widget-title">DEBUG STATS</div>
-    <button type="button" class="close-btn" onclick={onClose}>X</button>
+    {#if showCloseButton}
+      <button type="button" class="close-btn" onclick={onClose}>X</button>
+    {/if}
   </div>
 
   <div class="stats-grid">

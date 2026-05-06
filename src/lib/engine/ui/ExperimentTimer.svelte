@@ -4,7 +4,9 @@
   let {
     timeScale = $bindable(1),
     onClose = () => {},
-  }: { timeScale: number; onClose?: () => void } = $props()
+    showCloseButton = true,
+  }: { timeScale: number; onClose?: () => void; showCloseButton?: boolean } =
+    $props()
 
   let experimentStartTime = new Date()
   let simulatedMs = $state(0)
@@ -31,7 +33,9 @@
     <div class="widget-title">EXPERIMENT TIMER</div>
     <div class="header-actions">
       <div class="clock">{simulatedTime}</div>
-      <button type="button" class="close-btn" onclick={onClose}>X</button>
+      {#if showCloseButton}
+        <button type="button" class="close-btn" onclick={onClose}>X</button>
+      {/if}
     </div>
   </div>
 

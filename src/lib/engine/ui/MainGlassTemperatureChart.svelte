@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { Engine } from "../core.svelte"
 
-  let { engine, onClose = () => {} }: { engine: Engine; onClose?: () => void } = $props()
+  let {
+    engine,
+    onClose = () => {},
+    showCloseButton = true,
+  }: { engine: Engine; onClose?: () => void; showCloseButton?: boolean } = $props()
 
   const width = 720
   const height = 240
@@ -135,11 +139,13 @@
   <div class="header-row">
     <div class="chart-title">MAIN GLASS TEMPERATURE</div>
     <div class="toolbar">
-      <button type="button" class="close-btn" onclick={onClose}>X</button>
       <button type="button" class="pause-btn" onclick={togglePauseGraph}>
         {engine.mainGlassGraph.isPaused ? "RESUME GRAPH" : "PAUSE GRAPH"}
       </button>
       <button type="button" class="restart-btn" onclick={restartGraph}>RESTART GRAPH</button>
+      {#if showCloseButton}
+        <button type="button" class="close-btn" onclick={onClose}>X</button>
+      {/if}
     </div>
   </div>
 
