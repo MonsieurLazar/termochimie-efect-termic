@@ -224,29 +224,34 @@ const createGlass = (
     color
   )
 
-const createUiButton = (
-  name: string,
-  x: number,
-  y: number,
-  widget: "graph" | "timer" | "debug" | "calculator" | "theory",
-) =>
-  new Item<{
-    widget: "graph" | "timer" | "debug" | "calculator" | "theory"
-  }>(
-    "ui-button",
-    name,
-    { widget },
-    { x, y },
-    { width: 11, aspectRatio: 1.8 },
-    EngineButtonRenderer as any,
-    () => "",
-    undefined,
-    undefined,
-    () => false,
-    (_, engine) => {
-      engine.openWidget(widget)
-    },
-  )
+  const createUiButton = (
+    name: string,
+    x: number,
+    y: number,
+    widget: "graph" | "timer" | "debug" | "calculator" | "theory",
+  ) => {
+    const button = new Item<{
+      widget: "graph" | "timer" | "debug" | "calculator" | "theory"
+    }>(
+      "ui-button",
+      name,
+      { widget },
+      { x, y },
+      { width: 11, aspectRatio: 1.8 },
+      EngineButtonRenderer as any,
+      () => "",
+      undefined,
+      undefined,
+      () => false,
+      (_, engine) => {
+        engine.openWidget(widget)
+      },
+    );
+
+    button.imageUrl = `/design/icons/${widget}.png`;
+
+    return button;
+};
 
 export const engine = new Engine([
   createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 4, "#ffbdbd", "/design/300x300/subst_inf_300.png"),
