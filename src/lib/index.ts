@@ -228,7 +228,7 @@ const createGlass = (
     name: string,
     x: number,
     y: number,
-    widget: "graph" | "timer" | "debug" | "calculator" | "theory",
+    widget: "theory" | "graph" | "timer" | "calculator" | "debug",
   ) => {
     const button = new Item<{
       widget: "graph" | "timer" | "debug" | "calculator" | "theory"
@@ -291,9 +291,9 @@ export const engine = new Engine([
     "/design/300x300/residuu_300.png",
   ),
 
-  createUiButton("Open Graph", 82, 2, "graph"),
-  createUiButton("Open Timer", 82, 16, "timer"),
-  createUiButton("Open Debug", 82, 30, "debug"),
+  createUiButton("Open Theory", 82, 2, "theory"),
+  createUiButton("Open Graph", 82, 16, "graph"),
+  createUiButton("Open Timer", 82, 30, "timer"),
   createUiButton("Open Calculator", 82, 44, "calculator"),
-  createUiButton("Open Theory", 82, 58, "theory"),
+  createUiButton("Open Debug", 82, 58, "debug"),
 ])
