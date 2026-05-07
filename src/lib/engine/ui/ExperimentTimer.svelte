@@ -58,7 +58,9 @@
     background: #d7e7f4;
     box-shadow: 6px 6px 0 #8aa3ba;
     padding: 0.75rem;
-    max-width: 760px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
   }
 
   .header-row {
@@ -148,9 +150,4 @@
     box-shadow: 2px 2px 0 #7b6850;
   }
 
-  @media (max-width: 800px) {
-    .timer-widget {
-      max-width: 100%;
-    }
-  }
 </style>
