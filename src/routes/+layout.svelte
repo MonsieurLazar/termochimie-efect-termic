@@ -10,7 +10,7 @@
 
 <style>
   .main {
-    padding: 1rem;
+    padding: 0;
   }
 
   :global(body) {

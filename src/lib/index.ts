@@ -1,6 +1,7 @@
 import { Item } from "./engine/item.svelte"
 import { Engine } from "./engine/core.svelte"
 import GlassRenderer from "./engine/ui/GlassRenderer.svelte"
+import EngineButtonRenderer from "./engine/ui/EngineButtonRenderer.svelte"
 
 export const TRANSFER_RATE = 5 // units per second
 export const AMBIENT_TEMPERATURE = 25
@@ -29,13 +30,39 @@ export type GlassState = {
   maxCapacity: number
 }
 
+const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
+  "/design/300x300/subst_inf_300.png": { width: 151, height: 220 },
+  "/design/300x300/apa_distilata_300.png": { width: 115, height: 280 },
+  "/design/300x300/calorimetru_300.png": { width: 121, height: 151 },
+  "/design/300x300/erlenmeyer_300.png": { width: 160, height: 193 },
+  "/design/300x300/eprubeta_300.png": { width: 106, height: 286 },
+  "/design/300x300/residuu_300.png": { width: 121, height: 199 },
+}
+
+const BASE_SPRITE_PATH = "/design/300x300/calorimetru_300.png"
+const BASE_ENGINE_WIDTH_PERCENT = 8
+const PIXEL_TO_PERCENT =
+  BASE_ENGINE_WIDTH_PERCENT / SPRITE_SIZE_PX[BASE_SPRITE_PATH].width
+
+const spriteDimension = (imageUrl: string, fallbackWidthPercent = 10) => {
+  const size = SPRITE_SIZE_PX[imageUrl]
+  if (!size) {
+    return { width: fallbackWidthPercent, aspectRatio: 1 }
+  }
+
+  return {
+    width: Number((size.width * PIXEL_TO_PERCENT).toFixed(2)),
+    aspectRatio: size.width / size.height,
+  }
+}
+
 const createInfiniteSource = (name: string, recipe: Record<string, number>, x: number,  y: number,  color: string, imageUrl: string) =>
   new Item<any>(
     "infinite",
     name,
     { substances: recipe, temperatureC: AMBIENT_TEMPERATURE },
     { x, y },
-    { width: 13, aspectRatio: 1 },
+    spriteDimension(imageUrl, 13),
     undefined,
     () => "",
      // `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
@@ -72,8 +99,9 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
       )
       return targetTotal < targetState.maxCapacity ? "continuous" : false
     },
+    undefined,
     imageUrl,
-    color
+    ""
   )
 
 const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imageUrl: string, color: string = "", width: number = 15) =>
@@ -87,7 +115,7 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imag
       maxCapacity,
     },
     { x, y },
-    { width, aspectRatio: 1 },
+    spriteDimension(imageUrl, width),
     GlassRenderer as any,
     undefined,
     (self, engine, deltaMs) => {
@@ -182,8 +210,33 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imag
       if (target.kind === "spalatorie") return "instant"
       return false
     },
+    undefined,
     imageUrl,
     color
+  )
+
+const createUiButton = (
+  name: string,
+  x: number,
+  y: number,
+  widget: "graph" | "timer" | "debug" | "calculator" | "theory",
+) =>
+  new Item<{
+    widget: "graph" | "timer" | "debug" | "calculator" | "theory"
+  }>(
+    "ui-button",
+    name,
+    { widget },
+    { x, y },
+    { width: 11, aspectRatio: 1.8 },
+    EngineButtonRenderer as any,
+    () => "",
+    undefined,
+    undefined,
+    () => false,
+    (_, engine) => {
+      engine.openWidget(widget)
+    },
   )
 
 export const engine = new Engine([
@@ -209,7 +262,7 @@ export const engine = new Engine([
       maxCapacity: 0,
     },
     { x: 65, y: 20 },
-    { width: 20, aspectRatio: 1 },
+    spriteDimension("/design/300x300/residuu_300.png", 20),
     undefined,
     () => "",
       //`background-color: #3b82f6; border: 2px solid #2563eb; border-radius: 8px;`,
@@ -222,6 +275,13 @@ export const engine = new Engine([
       }
     },
     (_, target) => (target.kind === "glass" ? "instant" : false),
+    undefined,
     "/design/300x300/residuu_300.png",
   ),
+
+  createUiButton("Open Graph", 82, 2, "graph"),
+  createUiButton("Open Timer", 82, 16, "timer"),
+  createUiButton("Open Debug", 82, 30, "debug"),
+  createUiButton("Open Calculator", 82, 44, "calculator"),
+  createUiButton("Open Theory", 82, 58, "theory"),
 ])

@@ -5,6 +5,7 @@
   import { SUBSTANCES, type GlassState, AMBIENT_TEMPERATURE } from "../../index"
 
   let { item, engine }: { item: Item<GlassState>; engine: Engine } = $props()
+  const imageUrl = $derived(item.getDisplayImageUrl())
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
@@ -85,18 +86,15 @@
     bind:this={canvas} 
     width="100" 
     height="200"
-    style="mask-image: url({item.imageUrl}); -webkit-mask-image: url({item.imageUrl});"
+    style="mask-image: url({imageUrl}); -webkit-mask-image: url({imageUrl});"
   ></canvas>
 
-  {#if item.imageUrl}
-    <img src={item.imageUrl} alt="" class="glass-sprite" />
+  {#if imageUrl}
+    <img src={imageUrl} alt="" class="glass-sprite" />
   {/if}
 
   <div class="label-under">
     <div class="name">{item.name}</div>
-    <div class="temp" class:hot={item.state.temperatureC > 40}>
-      {item.state.temperatureC.toFixed(1)}°C
-    </div>
     <div class="capacity">
       {Object.values(item.state.substances).reduce((a, b) => a + b, 0).toFixed(1)} / {item.state.maxCapacity}
     </div>
@@ -117,7 +115,6 @@
     width: 100%;
     height: 100%;
     background: transparent !important;
-    /* Masca face ca lichidul să aibă forma sticlei */
     mask-size: contain;
     -webkit-mask-size: contain;
     mask-repeat: no-repeat;
@@ -152,14 +149,6 @@
   .name {
     font-weight: bold;
     font-size: 0.8rem;
-  }
-  .temp {
-    font-size: 0.9rem;
-    color: #444;
-  }
-  .temp.hot {
-    color: #e44d26;
-    font-weight: bold;
   }
   .capacity {
     font-size: 0.7rem;

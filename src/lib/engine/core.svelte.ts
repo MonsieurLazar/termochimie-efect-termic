@@ -1,7 +1,9 @@
 import { Item, type Position } from "./item.svelte"
 import { intersects, overlaps, getItemHeightPercent } from "./geometry"
+import { MainGlassTemperatureGraph } from "./main-glass-temperature-graph.svelte"
 
 export type EngineState = "idle" | "carrying" | "pouring"
+export type WidgetKey = "graph" | "timer" | "debug" | "calculator" | "theory"
 
 export class Engine {
   items: Item<any>[] = []
@@ -16,6 +18,15 @@ export class Engine {
   pourTargetIndex: number | null = $state(null)
   pouringAmount: number = $state(0)
   timeScale: number = $state(1)
+  mainGlassGraph: MainGlassTemperatureGraph = new MainGlassTemperatureGraph()
+  widgetVisibility: Record<WidgetKey, boolean> = $state({
+    graph: false,
+    timer: false,
+    debug: false,
+    calculator: false,
+    theory: false,
+  })
+  isUiInteractionLocked: boolean = $state(false)
 
   private carryOffset: Position = { x: 0, y: 0 }
   private pourAnimationId: number | null = null
@@ -23,6 +34,39 @@ export class Engine {
   private lastTickTimestamp: number = 0
   private lastPourTimestamp: number = 0
   private pourStartedThisMousedown: boolean = false
+
+  private simulationTimeSec: number = 0
+
+  resetMainGlassTemperatureHistory() {
+    this.mainGlassGraph.reset(this.simulationTimeSec)
+  }
+
+  toggleMainGlassGraphPause() {
+    this.mainGlassGraph.togglePause()
+  }
+
+  openWidget(widget: WidgetKey) {
+    this.widgetVisibility[widget] = true
+  }
+
+  closeWidget(widget: WidgetKey) {
+    this.widgetVisibility[widget] = false
+  }
+
+  setUiInteractionLock(locked: boolean) {
+    this.isUiInteractionLocked = locked
+  }
+
+  clearHoveredState() {
+    this.clearHovered()
+  }
+
+  isItemVisible(item: Item<any>) {
+    if (item.kind !== "ui-button") return true
+    const widget = item.state?.widget as WidgetKey | undefined
+    if (!widget) return true
+    return !this.widgetVisibility[widget]
+  }
 
   constructor(items: Item<any>[]) {
     this.items = items
@@ -52,7 +96,11 @@ export class Engine {
       this.stopEngineTick()
       Object.entries(handlers).forEach(([evt, fn]) => {
         const target = evt === "scroll" ? window : document
-        target.removeEventListener(evt, fn as any, evt === "scroll" ? true : false)
+        target.removeEventListener(
+          evt,
+          fn as any,
+          evt === "scroll" ? true : false,
+        )
       })
     }
   }
@@ -69,6 +117,7 @@ export class Engine {
   }
 
   private handleMouseMove(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (!this.parentMetrics.w || !this.parentMetrics.h) return
 
     this.mouseX = Math.max(
@@ -115,6 +164,7 @@ export class Engine {
     const overlapIdx = this.items.findIndex(
       (t, i) =>
         i !== this.carriedItemIndex &&
+        this.isItemVisible(t) &&
         overlaps(item, t, this.parentMetrics.w, this.parentMetrics.h),
     )
 
@@ -128,19 +178,22 @@ export class Engine {
 
   private updateHoverState() {
     this.clearHovered()
-    const hoverIdx = this.items.findIndex((item) =>
-      intersects(
-        this.mouseX,
-        this.mouseY,
-        item,
-        this.parentMetrics.w,
-        this.parentMetrics.h,
-      ),
+    const hoverIdx = this.items.findIndex(
+      (item) =>
+        this.isItemVisible(item) &&
+        intersects(
+          this.mouseX,
+          this.mouseY,
+          item,
+          this.parentMetrics.w,
+          this.parentMetrics.h,
+        ),
     )
     if (hoverIdx !== -1) this.markHovered(hoverIdx)
   }
 
   private handleMouseDown(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (
       this.engineState === "carrying" &&
       this.hoveredItemIndex !== null &&
@@ -157,6 +210,7 @@ export class Engine {
   }
 
   private handleMouseUp(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (this.engineState === "pouring") {
       this.stopPouring()
       this.returnCarriedItem()
@@ -165,12 +219,18 @@ export class Engine {
   }
 
   private handleClick(event: MouseEvent) {
+    if (this.isUiInteractionLocked) return
     if (this.pourStartedThisMousedown) {
       this.pourStartedThisMousedown = false
       return
     }
 
     if (this.engineState === "idle" && this.hoveredItemIndex !== null) {
+      const hoveredItem = this.items[this.hoveredItemIndex]
+      if (hoveredItem.kind === "ui-button") {
+        hoveredItem.onClick(hoveredItem, this)
+        return
+      }
       this.pickUp(this.hoveredItemIndex)
     } else if (this.engineState === "carrying") {
       this.handleCarriedClick()
@@ -189,17 +249,26 @@ export class Engine {
   }
 
   private handleCarriedClick() {
+    let shouldReturnToInitialPosition = false
+
     if (
       this.hoveredItemIndex !== null &&
       this.hoveredItemIndex !== this.carriedItemIndex
     ) {
+      shouldReturnToInitialPosition = true
       const carried = this.items[this.carriedItemIndex!]
       const target = this.items[this.hoveredItemIndex]
       if (carried.canTransition(carried, target) === "instant") {
         carried.transition(carried, target, (m) => alert(m))
       }
     }
-    this.returnCarriedItem()
+
+    if (shouldReturnToInitialPosition) {
+      this.returnCarriedItem()
+    } else {
+      this.releaseCarriedItem()
+    }
+
     this.engineState = "idle"
   }
 
@@ -245,6 +314,15 @@ export class Engine {
     this.clearHovered()
   }
 
+  private releaseCarriedItem() {
+    if (this.carriedItemIndex !== null) {
+      const item = this.items[this.carriedItemIndex]
+      item.isMoving = false
+    }
+    this.carriedItemIndex = null
+    this.clearHovered()
+  }
+
   private clearHovered() {
     if (this.hoveredItemIndex !== null) {
       this.items[this.hoveredItemIndex].isHovered = false
@@ -264,14 +342,28 @@ export class Engine {
       this.lastTickTimestamp = now
 
       const scaledDeltaMs = deltaMs * this.timeScale
+      this.simulationTimeSec += scaledDeltaMs / 1000
 
       this.items.forEach((item) => {
         item.tick(item, this, scaledDeltaMs)
       })
 
+      this.recordMainGlassTemperature()
+
       this.engineTickId = requestAnimationFrame(loop)
     }
     this.engineTickId = requestAnimationFrame(loop)
+  }
+
+  private recordMainGlassTemperature() {
+    const mainGlass = this.items.find(
+      (item) => item.kind === "glass" && item.name === "Main Glass",
+    )
+
+    if (!mainGlass) return
+
+    const temperatureC = Number(mainGlass.state?.temperatureC)
+    this.mainGlassGraph.record(this.simulationTimeSec, temperatureC)
   }
 
   private stopEngineTick() {

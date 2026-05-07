@@ -1,7 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte"
 
-  let { timeScale = $bindable(1) }: { timeScale: number } = $props()
+  let {
+    timeScale = $bindable(1),
+    onClose = () => {},
+    showCloseButton = true,
+  }: { timeScale: number; onClose?: () => void; showCloseButton?: boolean } =
+    $props()
 
   let experimentStartTime = new Date()
   let simulatedMs = $state(0)
@@ -23,67 +28,129 @@
   })
 </script>
 
-<div class="timer-overlay">
-  <div class="clock">{simulatedTime}</div>
+<section class="timer-widget" aria-label="Experiment timer">
+  <div class="header-row">
+    <div class="widget-title">EXPERIMENT TIMER</div>
+    <div class="header-actions">
+      <div class="clock">{simulatedTime}</div>
+      {#if showCloseButton}
+        <button type="button" class="close-btn" onclick={onClose}>X</button>
+      {/if}
+    </div>
+  </div>
+
   <div class="speed-controls">
     {#each [1, 2, 5, 10, 60] as speed}
-      <button 
+      <button
         class:active={timeScale === speed}
-        onclick={() => timeScale = speed}
+        onclick={() => (timeScale = speed)}
       >
         {speed}x
       </button>
     {/each}
   </div>
-</div>
+</section>
 
 <style>
-  .timer-overlay {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.9);
+  .timer-widget {
+    margin-top: 0;
+    border: 4px solid #23364a;
+    background: #d7e7f4;
+    box-shadow: 6px 6px 0 #8aa3ba;
     padding: 0.75rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    z-index: 100;
+    max-width: 760px;
+  }
+
+  .header-row {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    min-width: 140px;
-    pointer-events: auto;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .widget-title {
+    color: #0f2537;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #ffffff;
+    font-size: 0.95rem;
+    line-height: 1;
   }
 
   .clock {
-    font-family: monospace;
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     font-weight: bold;
-    color: #1a1a1a;
+    color: #17334b;
+    background: #f5fbff;
+    border: 3px solid #35526d;
+    box-shadow: 2px 2px 0 #8aa3ba;
+    padding: 0.2rem 0.45rem;
+    line-height: 1;
+  }
+
+  .close-btn {
+    border: 3px solid #23364a;
+    background: #ffc7c7;
+    color: #5a1515;
+    padding: 0.2rem 0.45rem;
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #8a4a4a;
+    line-height: 1;
+  }
+
+  .close-btn:hover {
+    background: #ffd6d6;
+  }
+
+  .close-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #8a4a4a;
   }
 
   .speed-controls {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.35rem;
+    flex-wrap: wrap;
   }
 
   .speed-controls button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border: 1px solid #ccc;
-    background: white;
+    padding: 0.2rem 0.5rem;
+    font: inherit;
+    font-size: 0.78rem;
+    border: 3px solid #23364a;
+    background: #f5fbff;
+    color: #1a2a3c;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
+    box-shadow: 2px 2px 0 #5a7f97;
   }
 
   .speed-controls button:hover {
-    background: #f3f4f6;
+    background: #e3f3ff;
+  }
+
+  .speed-controls button:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #5a7f97;
   }
 
   .speed-controls button.active {
-    background: #3b82f6;
-    color: white;
-    border-color: #2563eb;
+    background: #f6e2a9;
+    border-color: #7b6850;
+    box-shadow: 2px 2px 0 #7b6850;
+  }
+
+  @media (max-width: 800px) {
+    .timer-widget {
+      max-width: 100%;
+    }
   }
 </style>
