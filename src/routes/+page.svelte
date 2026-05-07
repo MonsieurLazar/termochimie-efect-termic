@@ -38,6 +38,15 @@
     offsetX: number
     offsetY: number
   } | null>(null)
+  let resizeState = $state<{
+    widget: WidgetKey
+    corner: "left" | "right"
+    startX: number
+    startY: number
+    startWidth: number
+    startHeight: number
+    startLeft: number
+  } | null>(null)
   let ignoreNextReleaseClick = $state(false)
   let hoveredWidgets = $state<Record<WidgetKey, boolean>>({
     graph: false,
@@ -48,6 +57,10 @@
   })
 
   const baseWidgetWidthPx = 760
+
+  function getViewportWidth() {
+    return typeof window === "undefined" ? 1280 : window.innerWidth
+  }
 
   function getWidgetBaseWidthPx(widget: WidgetKey) {
     const scale =
@@ -66,9 +79,21 @@
   function getWidgetWidthPx(widget: WidgetKey) {
     return Math.min(
       getWidgetBaseWidthPx(widget),
-      Math.max(0, window.innerWidth - 16),
+      Math.max(0, getViewportWidth() - 16),
     )
   }
+
+  function getWidgetBaseHeightPx(widget: WidgetKey) {
+    return widget === "timer" ? 220 : widget === "graph" ? 420 : 520
+  }
+
+  let widgetSize = $state<Record<WidgetKey, { width: number; height: number }>>({
+    graph: { width: getWidgetWidthPx("graph"), height: getWidgetBaseHeightPx("graph") },
+    timer: { width: getWidgetWidthPx("timer"), height: getWidgetBaseHeightPx("timer") },
+    debug: { width: getWidgetWidthPx("debug"), height: getWidgetBaseHeightPx("debug") },
+    calculator: { width: getWidgetWidthPx("calculator"), height: getWidgetBaseHeightPx("calculator") },
+    theory: { width: getWidgetWidthPx("theory"), height: getWidgetBaseHeightPx("theory") },
+  })
 
   function getWidgetHeightPx(widget: WidgetKey) {
     const element = document.getElementById(`widget-${widget}`)
@@ -85,9 +110,42 @@
     const cleanup = engine.init(parentElement!)
 
     const onMouseMove = (event: MouseEvent) => {
+      if (resizeState) {
+        const minWidth = 260
+        const minHeight = 180
+        const maxWidth = Math.max(minWidth, window.innerWidth - 16)
+        const maxHeight = Math.max(minHeight, window.innerHeight - 16)
+        const deltaX = event.clientX - resizeState.startX
+        const deltaY = event.clientY - resizeState.startY
+
+        if (resizeState.corner === "right") {
+          const nextWidth = Math.max(
+            minWidth,
+            Math.min(maxWidth, resizeState.startWidth + deltaX),
+          )
+          widgetSize[resizeState.widget].width = nextWidth
+        } else {
+          const nextWidth = Math.max(
+            minWidth,
+            Math.min(maxWidth, resizeState.startWidth - deltaX),
+          )
+          const rightEdge = resizeState.startLeft + resizeState.startWidth
+          const nextLeft = Math.max(8, rightEdge - nextWidth)
+          widgetSize[resizeState.widget].width = nextWidth
+          widgetPosition[resizeState.widget].x = nextLeft
+        }
+
+        const nextHeight = Math.max(
+          minHeight,
+          Math.min(maxHeight, resizeState.startHeight + deltaY),
+        )
+        widgetSize[resizeState.widget].height = nextHeight
+        return
+      }
+
       if (!dragState) return
-      const widgetWidth = getWidgetWidthPx(dragState.widget)
-      const widgetHeight = getWidgetHeightPx(dragState.widget)
+      const widgetWidth = widgetSize[dragState.widget].width
+      const widgetHeight = widgetSize[dragState.widget].height
       const maxX = Math.max(8, window.innerWidth - widgetWidth - 8)
       const maxY = Math.max(8, window.innerHeight - widgetHeight - 8)
       widgetPosition[dragState.widget] = {
@@ -108,15 +166,42 @@
       }
     }
 
+    const onMouseUp = () => {
+      if (!resizeState) return
+      resizeState = null
+      if (!dragState && !isAnyWidgetHovered()) {
+        engine.setUiInteractionLock(false)
+      }
+    }
+
     window.addEventListener("mousemove", onMouseMove)
     window.addEventListener("click", onClickRelease)
+    window.addEventListener("mouseup", onMouseUp)
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove)
       window.removeEventListener("click", onClickRelease)
+      window.removeEventListener("mouseup", onMouseUp)
       cleanup()
     }
   })
+
+  function startResize(widget: WidgetKey, corner: "left" | "right", event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+    focusWidget(widget)
+    const current = widgetSize[widget]
+    resizeState = {
+      widget,
+      corner,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: current.width,
+      startHeight: current.height,
+      startLeft: widgetPosition[widget].x,
+    }
+    engine.setUiInteractionLock(true)
+  }
 
   function focusWidget(widget: WidgetKey) {
     widgetZ[widget] = nextZ
@@ -236,7 +321,7 @@
     style:left={`${widgetPosition.graph.x}px`}
     style:top={`${widgetPosition.graph.y}px`}
     style:z-index={10000 + widgetZ.graph}
-    style:width={getWidgetWidth("graph")}
+    style:width={`${widgetSize.graph.width}px`}
     onmouseenter={() => beginWidgetHover("graph")}
     onmouseleave={() => endWidgetHover("graph")}
   >
@@ -255,7 +340,11 @@
         onclick={() => closeWidget("graph")}>X</button
       >
     </div>
-    <MainGlassTemperatureChart {engine} showCloseButton={false} />
+    <div class="widget-body" style:height={`${widgetSize.graph.height}px`}>
+      <MainGlassTemperatureChart {engine} showCloseButton={false} />
+    </div>
+    <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("graph", "left", event)}></button>
+    <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("graph", "right", event)}></button>
   </div>
 {/if}
 
@@ -269,7 +358,7 @@
     style:left={`${widgetPosition.timer.x}px`}
     style:top={`${widgetPosition.timer.y}px`}
     style:z-index={10000 + widgetZ.timer}
-    style:width={getWidgetWidth("timer")}
+    style:width={`${widgetSize.timer.width}px`}
     onmouseenter={() => beginWidgetHover("timer")}
     onmouseleave={() => endWidgetHover("timer")}
   >
@@ -288,7 +377,11 @@
         onclick={() => closeWidget("timer")}>X</button
       >
     </div>
-    <ExperimentTimer bind:timeScale={engine.timeScale} showCloseButton={false} />
+    <div class="widget-body" style:height={`${widgetSize.timer.height}px`}>
+      <ExperimentTimer bind:timeScale={engine.timeScale} showCloseButton={false} />
+    </div>
+    <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("timer", "left", event)}></button>
+    <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("timer", "right", event)}></button>
   </div>
 {/if}
 
@@ -302,7 +395,7 @@
     style:left={`${widgetPosition.debug.x}px`}
     style:top={`${widgetPosition.debug.y}px`}
     style:z-index={10000 + widgetZ.debug}
-    style:width={getWidgetWidth("debug")}
+    style:width={`${widgetSize.debug.width}px`}
     onmouseenter={() => beginWidgetHover("debug")}
     onmouseleave={() => endWidgetHover("debug")}
   >
@@ -321,7 +414,11 @@
         onclick={() => closeWidget("debug")}>X</button
       >
     </div>
-    <EngineDebugPanel {engine} showCloseButton={false} />
+    <div class="widget-body" style:height={`${widgetSize.debug.height}px`}>
+      <EngineDebugPanel {engine} showCloseButton={false} />
+    </div>
+    <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("debug", "left", event)}></button>
+    <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("debug", "right", event)}></button>
   </div>
 {/if}
 
@@ -335,7 +432,7 @@
     style:left={`${widgetPosition.calculator.x}px`}
     style:top={`${widgetPosition.calculator.y}px`}
     style:z-index={10000 + widgetZ.calculator}
-    style:width={getWidgetWidth("calculator")}
+    style:width={`${widgetSize.calculator.width}px`}
     onmouseenter={() => beginWidgetHover("calculator")}
     onmouseleave={() => endWidgetHover("calculator")}
   >
@@ -354,9 +451,11 @@
         onclick={() => closeWidget("calculator")}>X</button
       >
     </div>
-    <div class="external-widget-content">
+    <div class="external-widget-content widget-body" style:height={`${widgetSize.calculator.height}px`}>
       <CalculatorContent />
     </div>
+    <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("calculator", "left", event)}></button>
+    <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("calculator", "right", event)}></button>
   </div>
 {/if}
 
@@ -370,7 +469,7 @@
     style:left={`${widgetPosition.theory.x}px`}
     style:top={`${widgetPosition.theory.y}px`}
     style:z-index={10000 + widgetZ.theory}
-    style:width={getWidgetWidth("theory")}
+    style:width={`${widgetSize.theory.width}px`}
     onmouseenter={() => beginWidgetHover("theory")}
     onmouseleave={() => endWidgetHover("theory")}
   >
@@ -389,9 +488,11 @@
         onclick={() => closeWidget("theory")}>X</button
       >
     </div>
-    <div class="external-widget-content">
+    <div class="external-widget-content widget-body" style:height={`${widgetSize.theory.height}px`}>
       <TheoryContent />
     </div>
+    <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("theory", "left", event)}></button>
+    <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("theory", "right", event)}></button>
   </div>
 {/if}
 
@@ -412,7 +513,16 @@
     position: fixed;
     z-index: 2000;
     max-height: calc(100vh - 1rem);
-    overflow-y: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  .widget-body {
+    min-height: 180px;
+    overflow: auto;
+    flex: 0 0 auto;
   }
 
   .desktop-topbar {
@@ -466,5 +576,55 @@
     height: min(75vh, 760px);
     overflow: auto;
     padding: 0.75rem;
+  }
+
+  .resize-handle {
+    position: absolute;
+    bottom: 4px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    z-index: 12;
+  }
+
+  .resize-handle::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    opacity: 0.9;
+  }
+
+  .resize-left {
+    left: 4px;
+    cursor: nesw-resize;
+  }
+
+  .resize-left::before {
+    background: repeating-linear-gradient(
+      135deg,
+      #23364a 0,
+      #23364a 2px,
+      transparent 2px,
+      transparent 5px
+    );
+    clip-path: polygon(0 100%, 100% 100%, 0 0);
+  }
+
+  .resize-right {
+    right: 4px;
+    cursor: nwse-resize;
+  }
+
+  .resize-right::before {
+    background: repeating-linear-gradient(
+      45deg,
+      #23364a 0,
+      #23364a 2px,
+      transparent 2px,
+      transparent 5px
+    );
+    clip-path: polygon(100% 100%, 100% 0, 0 100%);
   }
 </style>
