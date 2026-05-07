@@ -104,7 +104,16 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
     ""
   )
 
-const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imageUrl: string, color: string = "", width: number = 15) =>
+const createGlass = (
+  name: string,
+  x: number,
+  y: number,
+  maxCapacity = 100,
+  imageUrl: string,
+  color: string = "",
+  width: number = 15,
+  useGlassRenderer = true,
+) =>
   new Item<GlassState>(
     "glass",
     name,
@@ -116,7 +125,7 @@ const createGlass = (name: string, x: number, y: number, maxCapacity = 100, imag
     },
     { x, y },
     spriteDimension(imageUrl, width),
-    GlassRenderer as any,
+    useGlassRenderer ? (GlassRenderer as any) : undefined,
     undefined,
     (self, engine, deltaMs) => {
       const state = self.state
@@ -245,7 +254,7 @@ export const engine = new Engine([
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 15, 2, "#7accff","/design/300x300/apa_distilata_300.png"),
   createInfiniteSource("Phenolphthalein", { Indicator: 0.01, H2O: 0.99 }, 1, 35,  "#fdf4ff", "/design/300x300/subst_inf_300.png",),
 
-  createGlass("Main Glass", 30, 50, 150, "/design/300x300/calorimetru_300.png", "", 15),
+  createGlass("Main Glass", 30, 50, 150, "/design/300x300/calorimetru_300.png", "", 15, false),
   createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
   createGlass("Ep1", 35, 1, 100, "/design/300x300/eprubeta_300.png", "", 6),
   createGlass("Ep2", 48, 1, 100, "/design/300x300/eprubeta_300.png", "", 6),

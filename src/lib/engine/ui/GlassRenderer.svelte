@@ -9,13 +9,10 @@
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
-  let time = 0
   let animationFrame: number
 
   const render = () => {
     if (!ctx || !canvas) return
-    time += 0.016
-
     const { width, height } = canvas
     ctx.clearRect(0, 0, width, height)
 
@@ -24,52 +21,23 @@
     const totalUnits = Object.values(substances).reduce((a, b) => a + b, 0)
     const fillLevel = Math.min(1, totalUnits / state.maxCapacity)
 
-    // 1. Draw Glass Body (Outline) - opțional acum că avem sprite
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"
-    ctx.lineWidth = 1
-    ctx.strokeRect(2, 2, width - 4, height - 4)
-
     const sorted = Object.entries(substances)
       .filter(([_, amount]) => amount > 0.001)
       .sort(([a], [b]) => (SUBSTANCES[b]?.density || 0) - (SUBSTANCES[a]?.density || 0))
 
-    let currentY = height - 5
-    const availableHeight = (height - 10) * fillLevel
-    const naoh_aq = (substances["NaOH_aq"] || 0)
-    const hcl_aq = (substances["HCl_aq"] || 0)
-    const hasIndicator = (substances["Indicator"] || 0) > 0.01
-    const isBasic = naoh_aq > hcl_aq + 0.01
-    const indicatorColor = (hasIndicator && isBasic) ? "255, 0, 150" : null
-
+    const bottomInset = item.name === "Secondary Glass"
+      ? 0
+      : Math.max(6, Math.round(height * 0.08))
+    const topInset = 5
+    let currentY = height - bottomInset
+    const availableHeight = (height - topInset - bottomInset) * fillLevel
     sorted.forEach(([name, amount]) => {
       const meta = SUBSTANCES[name] || { color: "128, 128, 128", opacity: 0.5 }
       const layerHeight = (amount / totalUnits) * availableHeight
-      let color = meta.color
-      let opacity = meta.opacity
-
-      if (indicatorColor && (name.includes("_aq") || name === "H2O" || name === "NaCl_aq")) {
-        color = indicatorColor
-        opacity = Math.max(opacity, 0.5)
-      }
-
-      ctx.fillStyle = `rgba(${color}, ${opacity})`
+      ctx.fillStyle = `rgba(${meta.color}, ${meta.opacity})`
       ctx.fillRect(2, currentY - layerHeight, width - 4, layerHeight)
       currentY -= layerHeight
     })
-
-    // 4. Reaction Effects (Bubbles)
-    if (state.reactionIntensity > 0.01) {
-      const bubbleCount = Math.floor(state.reactionIntensity * 15)
-      for (let i = 0; i < bubbleCount; i++) {
-        const bx = 5 + Math.random() * (width - 10)
-        const by = height - 5 - Math.random() * availableHeight
-        const br = 0.5 + Math.random() * 1.5
-        ctx.beginPath()
-        ctx.arc(bx, by, br, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * state.reactionIntensity})`
-        ctx.fill()
-      }
-    }
 
     animationFrame = requestAnimationFrame(render)
   }
