@@ -1,26 +1,26 @@
 <h1>Teorie</h1>
 
 <p class="indent_paragraph">
-  Caldura de reactie este efectul termic ce insoteste o reactie chimica si reprezinta
-  cantitatea de caldura absorbita sau degajata in timpul unei reactii chimice. Ea
-  depinde numai de starea initiala si starea finala a sistemului chimic, nu si de
-  drumul parcurs de sistem in timpul evolutiei sale. Caldura de reactie se determina
-  in majoritatea cazurilor in conditii de presiune constanta, Q<sub>p</sub> si mai
-  rar in conditii de volum constant, Q<sub>v</sub>, la o anumita temperatura.
-  Caldurile de reactie la presiune constanta Q<sub>p</sub> = DeltaH sunt chiar
-  entalpiile de reactie. Procesele chimice in care sistemul reactant cedeaza
-  caldura mediului exterior se numesc
-  <span class="highlight">reactii exoterme DeltaH &lt; 0</span>, iar cel in
-  care sistemul absoarbe caldura din mediul exterior
-  <span class="highlight">DeltaH &gt; 0 se numesc reactii endoterme</span>.
+  Căldura de reacție este efectul termic ce însoțește o reacție chimică și reprezintă
+  cantitatea de căldură absorbită sau degajată în timpul unei reacții chimice. Ea
+  depinde numai de starea inițială și starea finală a sistemului chimic, nu și de
+  drumul parcurs de sistem în timpul evoluției sale. Căldura de reacție se determină
+  în majoritatea cazurilor în condiții de presiune constantă, Q<sub>p</sub> și mai
+  rar în condiții de volum constant, Q<sub>v</sub>, la o anumită temperatură.
+  Căldurile de reacție la presiune constantă Q<sub>p</sub> = &Delta;H sunt chiar
+  entalpiile de reacție. Procesele chimice în care sistemul reactant cedează
+  căldura mediului exterior se numesc
+  <span class="highlight">reacții exoterme &Delta;H &lt; O</span>, iar cel în
+  care sistemul absoarbe căldura din mediul exterior
+  <span class="highlight">&Delta;H &gt; O se numesc reacții endoterme</span>.
 </p>
 
 <div class="exo-endo-container">
   <svg viewBox="0 0 1350 450" class="ecuatie-svg">
     <image href="/design/teorie_ilustratii/caldura_1350_450.png" width="1350" height="450" />
 
-    <text x="330" y="420" text-anchor="middle" class="svg-label">Absorbtie de caldura</text>
-    <text x="1020" y="420" text-anchor="middle" class="svg-label">Degajare de caldura</text>
+    <text x="200" y="420" text-anchor="middle" class="svg-label">Absorbtie de caldura</text>
+    <text x="975" y="420" text-anchor="middle" class="svg-label">Degajare de caldura</text>
   </svg>
 </div>
 
