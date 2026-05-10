@@ -13,8 +13,8 @@
   const padRight = 16
   const padTop = 16
   const padBottom = 28
-  const hoverTagWidth = 144
-  const hoverTagHeight = 24
+  const hoverTagWidth = 170
+  const hoverTagHeight = 42
   const hoverTagGap = 10
   const svgId = `main-glass-chart-${Math.random().toString(36).slice(2)}`
 
@@ -94,7 +94,7 @@
     return {
       x: padLeft + normalizedX * plotWidth,
       y: height - padBottom - normalizedY * plotHeight,
-      timeSec: p.timeSec,
+      timeSec: p.timeSec - stats.firstTime,
       tempC: p.tempC,
     }
   })
@@ -212,15 +212,18 @@
           ry="2"
           class="hover-tag-bg"
         />
-        <text x="0" y={hoverTagHeight / 2 + 5} text-anchor="middle" class="hover-tag-text">
-          {hoveredPoint.tempC.toFixed(1)}°C
+        <text x="0" y="17" text-anchor="middle" class="hover-tag-text">
+          t = {hoveredPoint.timeSec.toFixed(1)}s
+        </text>
+        <text x="0" y="33" text-anchor="middle" class="hover-tag-text">
+          T = {hoveredPoint.tempC.toFixed(1)}°C
         </text>
       </g>
     {/if}
 
-    <text x={padLeft} y={height - 6} class="label">t={Math.max(0, Math.round(stats.firstTime))}s</text>
+    <text x={padLeft} y={height - 6} class="label">t=0s</text>
     <text x={width - padRight} y={height - 6} class="label" text-anchor="end">
-      t={Math.max(0, Math.round(stats.lastTime))}s
+      t={Math.max(0, Math.round(stats.lastTime - stats.firstTime))}s
     </text>
   </svg>
 

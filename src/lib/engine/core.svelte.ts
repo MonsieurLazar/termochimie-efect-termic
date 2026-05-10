@@ -46,6 +46,9 @@ export class Engine {
   }
 
   openWidget(widget: WidgetKey) {
+    if (widget === "graph" && !this.widgetVisibility.graph) {
+      this.resetMainGlassTemperatureHistory()
+    }
     this.widgetVisibility[widget] = true
   }
 
