@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { engine, TRANSFER_RATE } from "$lib/index"
+  import { engine, getTestTubeValidation, TRANSFER_RATE } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -286,6 +286,126 @@
     if (engine.engineState !== "idle") return "grabbing"
     return "default"
   })
+
+  const cleaningItemNames = ["Berzelius", "Eprubeta NaOH", "Eprubeta HCl", "Eprubeta NH4OH"]
+  const cleanItems = $derived(
+    engine.items.filter((item) => cleaningItemNames.includes(item.name)),
+  )
+  const dirtyCleanItems = $derived(
+    cleanItems.filter((item) => item.state?.isDirty),
+  )
+  const isCleaningStepComplete = $derived(dirtyCleanItems.length === 0)
+  const mainGlass = $derived(engine.items.find((item) => item.name === "Calorimetru"))
+  const hasSecondaryGlassInMain = $derived(mainGlass?.state?.hasGlass === true)
+  const testTubeItems = $derived(
+    engine.items.filter((item) => ["Eprubeta NaOH", "Eprubeta HCl", "Eprubeta NH4OH"].includes(item.name)),
+  )
+  const testTubeValidations = $derived(
+    testTubeItems.map((item) => ({ item, validation: getTestTubeValidation(item) })),
+  )
+  const areTestTubeReactionsComplete = $derived(
+    testTubeValidations
+      .filter(({ item }) => ["Eprubeta NaOH", "Eprubeta HCl"].includes(item.name))
+      .every(({ validation }) => validation?.isComplete),
+  )
+  const isGraphStepComplete = $derived(engine.widgetVisibility.graph)
+  const isCalorimeterPourComplete = $derived(
+    mainGlass?.state?.receivedHClTube === true && mainGlass?.state?.receivedNaOHTube === true,
+  )
+  let guideStep = $state(1)
+
+  $effect(() => {
+    if (guideStep === 1 && isCleaningStepComplete) {
+      guideStep = 2
+    } else if (guideStep === 2 && hasSecondaryGlassInMain) {
+      guideStep = 3
+    } else if (guideStep === 3 && areTestTubeReactionsComplete) {
+      guideStep = 4
+    } else if (guideStep === 4 && isGraphStepComplete) {
+      guideStep = 5
+    } else if (guideStep === 5 && isCalorimeterPourComplete) {
+      guideStep = 6
+    }
+  })
+
+  function getItem(name: string) {
+    return engine.items.find((item) => item.name === name)
+  }
+
+  function emptyIntoCalorimeter(sourceName: string) {
+    const source = getItem(sourceName)
+    const calorimeter = getItem("Calorimetru")
+    if (!source || !calorimeter) return
+
+    const sourceTotal = Object.values(source.state.substances).reduce(
+      (sum: number, amount: number) => sum + amount,
+      0,
+    )
+    if (sourceTotal <= 0) return
+
+    const targetTotal = Object.values(calorimeter.state.substances).reduce(
+      (sum: number, amount: number) => sum + amount,
+      0,
+    )
+    const newTargetTotal = targetTotal + sourceTotal
+
+    calorimeter.state.temperatureC =
+      (calorimeter.state.temperatureC * targetTotal +
+        source.state.temperatureC * sourceTotal) /
+      newTargetTotal
+
+    Object.entries(source.state.substances).forEach(([name, amount]) => {
+      calorimeter.state.substances[name] =
+        (calorimeter.state.substances[name] || 0) + amount
+    })
+    source.state.substances = {}
+
+    if (sourceName === "Eprubeta HCl") calorimeter.state.receivedHClTube = true
+    if (sourceName === "Eprubeta NaOH") calorimeter.state.receivedNaOHTube = true
+  }
+
+  function skipGuideStep() {
+    if (guideStep === 1) {
+      cleanItems.forEach((item) => {
+        item.state.substances = {}
+        item.state.isDirty = false
+        item.state.rinseUnits = 0
+      })
+      guideStep = 2
+      return
+    }
+
+    if (guideStep === 2) {
+      const berzelius = getItem("Berzelius")
+      const calorimeter = getItem("Calorimetru")
+      if (calorimeter) calorimeter.state.hasGlass = true
+      if (berzelius) berzelius.state.isHidden = true
+      guideStep = 3
+      return
+    }
+
+    if (guideStep === 3) {
+      const hclTube = getItem("Eprubeta HCl")
+      const naohTube = getItem("Eprubeta NaOH")
+      if (hclTube) hclTube.state.substances = { HCl_aq: 7.5, H2O: 17.5 }
+      if (naohTube) naohTube.state.substances = { NaOH_aq: 15, H2O: 35 }
+      guideStep = 4
+      return
+    }
+
+    if (guideStep === 4) {
+      engine.openWidget("graph")
+      guideStep = 5
+      return
+    }
+
+    if (guideStep === 5) {
+      emptyIntoCalorimeter("Eprubeta HCl")
+      emptyIntoCalorimeter("Eprubeta NaOH")
+      guideStep = 6
+      return
+    }
+  }
 </script>
 
 <section
@@ -311,6 +431,45 @@
   {/if}
 </section>
 
+<aside class="experiment-guide" aria-label="Experiment guide">
+  <div class="guide-title">Ghid experiment</div>
+  <div class="guide-step">Pas {guideStep}</div>
+  {#if guideStep === 1}
+    <p>Toarna 10-15 unitati de apa distilata in fiecare vas murdar, apoi goleste-l la Gunoi.</p>
+    <div class="guide-list">
+      {#each cleanItems as item}
+        <span class:done={!item.state?.isDirty}>
+          {item.name}: {item.state?.isDirty ? `murdar (${(item.state?.rinseUnits || 0).toFixed(1)} / 10 apa)` : "curat"}
+        </span>
+      {/each}
+    </div>
+  {:else if guideStep === 2}
+    <p>Vasele sunt curate. Pune Berzelius in Calorimetru.</p>
+  {:else if guideStep === 3}
+    <p>Toarna 25 ml HCl in Eprubeta HCl si 50 ml NaOH in Eprubeta NaOH. Daca ai gresit substanta sau cantitatea, goleste eprubeta la Gunoi.</p>
+    <div class="guide-list">
+      {#each testTubeValidations as { item, validation }}
+        <span class:done={validation?.isComplete} class:error={validation?.isValid === false}>
+          {item.name}: {validation?.label} - {validation?.message}
+        </span>
+      {/each}
+    </div>
+  {:else if guideStep === 4}
+    <p>Deschide widgetul Temperatura pentru grafic.</p>
+  {:else if guideStep === 5}
+    <p>Toarna Eprubeta HCl si Eprubeta NaOH in Calorimetru, apoi urmareste temperatura.</p>
+    <div class="guide-list">
+      <span class:done={mainGlass?.state?.receivedHClTube}>Eprubeta HCl turnata</span>
+      <span class:done={mainGlass?.state?.receivedNaOHTube}>Eprubeta NaOH turnata</span>
+    </div>
+  {:else}
+    <p>Deschide widgetul Ceas si foloseste modul de viteza pentru a urmari stabilizarea temperaturii.</p>
+  {/if}
+  {#if guideStep < 6}
+    <button type="button" class="guide-skip" onclick={skipGuideStep}>Skip pas</button>
+  {/if}
+</aside>
+
 {#if engine.widgetVisibility.graph}
   <div
     id="widget-graph"
@@ -332,7 +491,7 @@
         class:is-dragging={dragState?.widget === "graph"}
         onclick={(event) => startDrag("graph", event)}
       >
-        Graph
+        Temperatura
       </button>
       <button
         type="button"
@@ -369,7 +528,7 @@
         class:is-dragging={dragState?.widget === "timer"}
         onclick={(event) => startDrag("timer", event)}
       >
-        Timer
+        Ceas
       </button>
       <button
         type="button"
@@ -480,7 +639,7 @@
         class:is-dragging={dragState?.widget === "theory"}
         onclick={(event) => startDrag("theory", event)}
       >
-        Theory
+        Teorie
       </button>
       <button
         type="button"
@@ -523,6 +682,73 @@
     min-height: 180px;
     overflow: auto;
     flex: 0 0 auto;
+  }
+
+  .experiment-guide {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1500;
+    width: min(320px, calc(100vw - 2rem));
+    border: 4px solid #23364a;
+    background: #f6e2a9;
+    color: #1a2a3c;
+    box-shadow: 6px 6px 0 #7b6850;
+    padding: 0.8rem;
+    font-weight: 700;
+  }
+
+  .guide-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .guide-step {
+    display: inline-block;
+    border: 2px solid #23364a;
+    background: #d7e7f4;
+    padding: 0.15rem 0.45rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .experiment-guide p {
+    margin: 0.25rem 0 0.6rem;
+    line-height: 1.35;
+  }
+
+  .guide-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .guide-list span {
+    color: #6f1d1b;
+  }
+
+  .guide-list span.done {
+    color: #1f7a3a;
+  }
+
+  .guide-list span.error {
+    color: #b42318;
+  }
+
+  .guide-skip {
+    margin-top: 0.75rem;
+    border: 3px solid #23364a;
+    background: #d7e7f4;
+    color: #1a2a3c;
+    box-shadow: 3px 3px 0 #7b6850;
+    padding: 0.35rem 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .guide-skip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #7b6850;
   }
 
   .desktop-topbar {

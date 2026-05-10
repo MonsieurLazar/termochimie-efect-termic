@@ -30,11 +30,93 @@ export type GlassState = {
   maxCapacity: number
   hasGlass?: boolean
   isHidden?: boolean
+  isDirty?: boolean
+  rinseUnits?: number
+  validationErrorShown?: boolean
+  receivedHClTube?: boolean
+  receivedNaOHTube?: boolean
+}
+
+export const TEST_TUBE_REQUIREMENTS: Record<
+  string,
+  { requiredSubstance?: string; requiredVolume?: number; label: string }
+> = {
+  "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+  "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+  "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+}
+
+export const getTestTubeValidation = (item: Item<any>) => {
+  const requirement = TEST_TUBE_REQUIREMENTS[item.name]
+  if (!requirement) return null
+  if (!requirement.requiredSubstance || !requirement.requiredVolume) {
+    return {
+      ...requirement,
+      isComplete: true,
+      isValid: true,
+      message: "Curata si las-o goala pentru acest experiment.",
+    }
+  }
+
+  const substances = (item.state as GlassState).substances
+  const totalAmount = Object.values(substances).reduce((sum, amount) => sum + amount, 0)
+  const requiredAmount = substances[requirement.requiredSubstance] || 0
+  const foreignSubstances = Object.entries(substances)
+    .filter(([name, amount]) => amount > 0.01 && name !== requirement.requiredSubstance && name !== "H2O")
+    .map(([name]) => name)
+
+  if (foreignSubstances.length > 0) {
+    return {
+      ...requirement,
+      isComplete: false,
+      isValid: false,
+      message: `Substanta gresita (${foreignSubstances.join(", ")}). Goleste la Gunoi si reia.` ,
+    }
+  }
+
+  if (requiredAmount <= 0.01) {
+    return {
+      ...requirement,
+      isComplete: false,
+      isValid: true,
+      message: `Toarna ${requirement.label}.`,
+    }
+  }
+
+  const tolerance = 2
+  const isValid = Math.abs(totalAmount - requirement.requiredVolume) <= tolerance
+
+  return {
+    ...requirement,
+    isComplete: isValid,
+    isValid,
+    message: isValid
+      ? `Corect: ${totalAmount.toFixed(1)} ml.`
+      : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Gunoi si reia.`,
+  }
+}
+
+const areTestTubeReactionsComplete = () =>
+  engine.items
+    .filter((item) => ["Eprubeta HCl", "Eprubeta NaOH"].includes(item.name))
+    .every((item) => getTestTubeValidation(item)?.isComplete)
+
+let isCalorimeterPourUnlocked = false
+
+const isGraphOpen = () => engine.widgetVisibility.graph
+
+const isCalorimeterReadyForPour = () => {
+  if (areTestTubeReactionsComplete() && isGraphOpen()) {
+    isCalorimeterPourUnlocked = true
+  }
+  return isCalorimeterPourUnlocked
 }
 
 const canReceiveLiquid = (target: Item<any>) => {
   if (target.kind !== "glass") return false
-  if (target.name !== "Main Glass") return true
+  if ((target.state as GlassState).isDirty) return false
+  if (target.name !== "Calorimetru") return true
+  if (!isCalorimeterReadyForPour()) return false
   return (target.state as GlassState).hasGlass === true
 }
 
@@ -49,6 +131,7 @@ const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
 
 const BASE_SPRITE_PATH = "/design/300x300/calorimetru_300.png"
 const BASE_ENGINE_WIDTH_PERCENT = 8
+const ITEM_SCALE = 0.8
 const PIXEL_TO_PERCENT =
   BASE_ENGINE_WIDTH_PERCENT / SPRITE_SIZE_PX[BASE_SPRITE_PATH].width
 
@@ -59,7 +142,7 @@ const spriteDimension = (imageUrl: string, fallbackWidthPercent = 10) => {
   }
 
   return {
-    width: Number((size.width * PIXEL_TO_PERCENT).toFixed(2)),
+    width: Number((size.width * PIXEL_TO_PERCENT * ITEM_SCALE).toFixed(2)),
     aspectRatio: size.width / size.height,
   }
 }
@@ -76,8 +159,11 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
      // `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
     undefined,
     (_, target, __, deltaMs) => {
-      if (canReceiveLiquid(target) && deltaMs) {
+      if (target.kind === "glass" && deltaMs) {
         const targetState = target.state as GlassState
+        if (targetState.isDirty && (recipe.H2O || 0) < 1) return
+        if (!targetState.isDirty && !canReceiveLiquid(target)) return
+
         const targetTotal = Object.values(targetState.substances).reduce(
           (a: number, b: number) => a + b,
           0,
@@ -96,9 +182,24 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
         Object.entries(recipe).forEach(([sub, fraction]) => {
           targetState.substances[sub] = (targetState.substances[sub] || 0) + amount * fraction
         })
+        if (targetState.isDirty) {
+          targetState.rinseUnits = Math.min(15, (targetState.rinseUnits || 0) + amount)
+        }
       }
     },
     (_, target) => {
+      if (target.name === "Calorimetru") return false
+      if (target.kind === "glass" && (target.state as GlassState).isDirty) {
+        if ((recipe.H2O || 0) < 1) return false
+        const targetState = target.state as GlassState
+        const targetTotal = Object.values(targetState.substances).reduce(
+          (a: number, b: number) => a + b,
+          0,
+        )
+        return targetTotal < targetState.maxCapacity && (targetState.rinseUnits || 0) < 15
+          ? "continuous"
+          : false
+      }
       if (!canReceiveLiquid(target)) return false
       const targetState = target.state as GlassState
       const targetTotal = Object.values(targetState.substances).reduce(
@@ -122,6 +223,7 @@ const createGlass = (
   width: number = 15,
   useGlassRenderer = true,
   hasGlass = true,
+  isDirty = false,
 ) =>
   new Item<GlassState>(
     "glass",
@@ -132,6 +234,7 @@ const createGlass = (
       reactionIntensity: 0,
       maxCapacity,
       hasGlass,
+      isDirty,
     },
     { x, y },
     spriteDimension(imageUrl, width),
@@ -166,6 +269,43 @@ const createGlass = (
       state.temperatureC += cooldown
     },
     (self, target, _, deltaMs) => {
+      if (target.name === "Calorimetru" && isCalorimeterReadyForPour()) {
+        const subs = Object.keys(self.state.substances)
+        const sourceTotal = subs.reduce(
+          (s, k) => s + self.state.substances[k],
+          0,
+        )
+        if (sourceTotal <= 0) return
+
+        const targetState = target.state as GlassState
+        const targetTotal = Object.values(targetState.substances).reduce(
+          (a: number, b: number) => a + b,
+          0,
+        )
+        const remaining = Math.max(0, targetState.maxCapacity - targetTotal)
+        const amount = Math.min(sourceTotal, remaining)
+        if (amount <= 0) return
+
+        const newTargetTotal = targetTotal + amount
+        targetState.temperatureC =
+          (targetState.temperatureC * targetTotal +
+            self.state.temperatureC * amount) /
+          newTargetTotal
+
+        subs.forEach((k) => {
+          const trans = (self.state.substances[k] / sourceTotal) * amount
+          targetState.substances[k] = (targetState.substances[k] || 0) + trans
+          self.state.substances[k] = Math.max(
+            0,
+            self.state.substances[k] - trans,
+          )
+        })
+
+        if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
+        if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
+        return
+      }
+
       if (canReceiveLiquid(target) && deltaMs) {
         const subs = Object.keys(self.state.substances)
         const sourceTotal = subs.reduce(
@@ -204,8 +344,12 @@ const createGlass = (
             self.state.substances[k] - trans,
           )
         })
+        if (target.name === "Calorimetru") {
+          if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
+          if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
+        }
       }
-      if (self.name === "Secondary Glass" && target.name === "Main Glass") {
+      if (self.name === "Berzelius" && target.name === "Calorimetru") {
         const targetState = target.state as GlassState
         const subs = Object.keys(self.state.substances)
         const sourceTotal = subs.reduce(
@@ -243,11 +387,21 @@ const createGlass = (
         self.state.substances = {}
         self.state.temperatureC = AMBIENT_TEMPERATURE
         self.state.reactionIntensity = 0
+        if (!self.state.isDirty || (self.state.rinseUnits || 0) >= 10) {
+          self.state.isDirty = false
+          self.state.rinseUnits = 0
+        }
       }
     },
     (self, target) => {
-      if (self.name === "Secondary Glass" && target.name === "Main Glass") {
+      if (self.state.isDirty && target.kind !== "spalatorie") return false
+      if (self.name === "Berzelius" && target.name === "Calorimetru") {
         return (target.state as GlassState).hasGlass ? false : "instant"
+      }
+      if (target.name === "Calorimetru" && isCalorimeterReadyForPour()) {
+        return Object.values(self.state.substances).some((amount) => amount > 0)
+          ? "instant"
+          : false
       }
       if (canReceiveLiquid(target)) {
         const sourceTotal = Object.values(self.state.substances).reduce(
@@ -284,7 +438,7 @@ const createGlass = (
       name,
       { widget },
       { x, y },
-      { width: 22, aspectRatio: 1.8 },
+      { width: 17.6, aspectRatio: 1.8 },
       EngineButtonRenderer as any,
       () => "",
       undefined,
@@ -307,21 +461,22 @@ export const engine = new Engine([
   createInfiniteSource("NH4OH sol. 10%", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/subst_inf_baza_302_440.png"),
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
 
-  createGlass("Main Glass", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
-  createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
-  createGlass("Ep1", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
-  createGlass("Ep2", 47, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
-  createGlass("Ep3", 60, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
+  createGlass("Calorimetru", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
+  createGlass("Berzelius", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8, true, true, true),
+  createGlass("Eprubeta NaOH", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta HCl", 47, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta NH4OH", 60, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
 
 
   new Item<GlassState>(
     "spalatorie",
-    "Spalatorie",
+    "Gunoi",
     {
       substances: {},
       temperatureC: AMBIENT_TEMPERATURE,
       reactionIntensity: 0,
       maxCapacity: 0,
+      rinseUnits: 0,
     },
     { x: 67, y: 40 },
     spriteDimension("/design/300x300/residuu_300.png", 20),
@@ -334,6 +489,10 @@ export const engine = new Engine([
         target.state.substances = {}
         target.state.temperatureC = AMBIENT_TEMPERATURE
         target.state.reactionIntensity = 0
+        if (!target.state.isDirty || (target.state.rinseUnits || 0) >= 10) {
+          target.state.isDirty = false
+          target.state.rinseUnits = 0
+        }
       }
     },
     (_, target) => (target.kind === "glass" ? "instant" : false),
@@ -341,8 +500,8 @@ export const engine = new Engine([
     "/design/300x300/residuu_300.png",
   ),
 
-  createUiButton("Theory", 82, 2, "theory"),
-  createUiButton("Graph", 82, 16, "graph"),
-  createUiButton("Timer", 82, 30, "timer"),
-  createUiButton("Calculator", 82, 44, "calculator"),
+  createUiButton("Teorie", 70, 2, "theory"),
+  createUiButton("Temperatura", 80, 2, "graph"),
+  createUiButton("Ceas", 70, 18, "timer"),
+  createUiButton("Calculator", 80, 18, "calculator"),
 ])

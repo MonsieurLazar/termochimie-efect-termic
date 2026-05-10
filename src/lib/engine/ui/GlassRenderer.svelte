@@ -6,6 +6,9 @@
 
   let { item, engine }: { item: Item<GlassState>; engine: Engine } = $props()
   const imageUrl = $derived(item.getDisplayImageUrl())
+  const dirtyOpacity = $derived(
+    Math.max(0.16, 0.48 - Math.min(15, item.state.rinseUnits || 0) * 0.02),
+  )
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
@@ -25,7 +28,7 @@
       .filter(([_, amount]) => amount > 0.001)
       .sort(([a], [b]) => (SUBSTANCES[b]?.density || 0) - (SUBSTANCES[a]?.density || 0))
 
-    const bottomInset = item.name === "Secondary Glass"
+    const bottomInset = item.name === "Berzelius"
       ? 0
       : Math.max(6, Math.round(height * 0.08))
     const topInset = 5
@@ -61,9 +64,16 @@
     <img src={imageUrl} alt="" class="glass-sprite" />
   {/if}
 
+  {#if item.state.isDirty}
+    <div
+      class="dirty-overlay"
+      style="opacity: {dirtyOpacity}; mask-image: url({imageUrl}); -webkit-mask-image: url({imageUrl});"
+    ></div>
+  {/if}
+
   <div class="label-under">
     <div class="name">{item.name}</div>
-    {#if item.name !== "Secondary Glass"}
+    {#if item.name !== "Berzelius"}
     <div class="capacity">
       {Object.values(item.state.substances).reduce((a, b) => a + b, 0).toFixed(1)} / {item.state.maxCapacity}
     </div>
@@ -103,6 +113,22 @@
     pointer-events: none; /* Să poți da click prin imagine pe obiect */
     z-index: 10;
     /* mix-blend-mode: multiply; -> opțional, dacă vrei ca reflexiile sprite-ului să se combine cu lichidul */
+  }
+
+  .dirty-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(15, 15, 15);
+    pointer-events: none;
+    z-index: 12;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
   }
 
   .label-under {

@@ -232,7 +232,7 @@ export class Engine {
         hoveredItem.onClick(hoveredItem, this)
         return
       }
-      if (hoveredItem.name === "Main Glass") return
+      if (hoveredItem.name === "Calorimetru") return
       this.pickUp(this.hoveredItemIndex)
     } else if (this.engineState === "carrying") {
       this.handleCarriedClick()
@@ -261,7 +261,7 @@ export class Engine {
       const carried = this.items[this.carriedItemIndex!]
       const target = this.items[this.hoveredItemIndex]
       if (carried.canTransition(carried, target) === "instant") {
-        carried.transition(carried, target, (m) => alert(m))
+        carried.transition(carried, target, () => {})
       }
     }
 
@@ -279,7 +279,7 @@ export class Engine {
       const scaledDelta = delta * this.timeScale
       const carried = this.items[this.carriedItemIndex!]
       const target = this.items[this.pourTargetIndex!]
-      carried.transition(carried, target, (m) => alert(m), scaledDelta)
+      carried.transition(carried, target, () => {}, scaledDelta)
       this.pouringAmount += scaledDelta / 1000
 
       if (carried.canTransition(carried, target) !== "continuous") {
@@ -354,7 +354,7 @@ export class Engine {
 
   private recordMainGlassTemperature() {
     const mainGlass = this.items.find(
-      (item) => item.kind === "glass" && item.name === "Main Glass",
+      (item) => item.kind === "glass" && item.name === "Calorimetru",
     )
 
     if (!mainGlass) return
