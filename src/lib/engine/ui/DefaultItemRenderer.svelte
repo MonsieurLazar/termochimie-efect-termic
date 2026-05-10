@@ -4,6 +4,11 @@
 
   let { item, engine }: { item: Item<any>; engine: Engine } = $props()
   const imageUrl = $derived(item.getDisplayImageUrl())
+  const displayName = $derived(
+    item.name === "Main Glass" && item.state?.hasGlass
+      ? "Calorimetru cu pahar"
+      : item.name,
+  )
 </script>
 
 <div class="render-container">
@@ -19,7 +24,7 @@
   {/if}
 </div>
 
-<div class="item-label">{item.name} </div>
+<div class="item-label">{displayName} </div>
 <style>
   .render-container {
     width: 100%;

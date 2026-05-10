@@ -28,6 +28,14 @@ export type GlassState = {
   temperatureC: number
   reactionIntensity: number
   maxCapacity: number
+  hasGlass?: boolean
+  isHidden?: boolean
+}
+
+const canReceiveLiquid = (target: Item<any>) => {
+  if (target.kind !== "glass") return false
+  if (target.name !== "Main Glass") return true
+  return (target.state as GlassState).hasGlass === true
 }
 
 const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
@@ -68,7 +76,7 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
      // `background-color: ${color}; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);`,
     undefined,
     (_, target, __, deltaMs) => {
-      if (target.kind === "glass" && deltaMs) {
+      if (canReceiveLiquid(target) && deltaMs) {
         const targetState = target.state as GlassState
         const targetTotal = Object.values(targetState.substances).reduce(
           (a: number, b: number) => a + b,
@@ -91,7 +99,7 @@ const createInfiniteSource = (name: string, recipe: Record<string, number>, x: n
       }
     },
     (_, target) => {
-      if (target.kind !== "glass") return false
+      if (!canReceiveLiquid(target)) return false
       const targetState = target.state as GlassState
       const targetTotal = Object.values(targetState.substances).reduce(
         (a: number, b: number) => a + b,
@@ -113,6 +121,7 @@ const createGlass = (
   color: string = "",
   width: number = 15,
   useGlassRenderer = true,
+  hasGlass = true,
 ) =>
   new Item<GlassState>(
     "glass",
@@ -122,6 +131,7 @@ const createGlass = (
       temperatureC: AMBIENT_TEMPERATURE,
       reactionIntensity: 0,
       maxCapacity,
+      hasGlass,
     },
     { x, y },
     spriteDimension(imageUrl, width),
@@ -156,7 +166,7 @@ const createGlass = (
       state.temperatureC += cooldown
     },
     (self, target, _, deltaMs) => {
-      if (target.kind === "glass" && deltaMs) {
+      if (canReceiveLiquid(target) && deltaMs) {
         const subs = Object.keys(self.state.substances)
         const sourceTotal = subs.reduce(
           (s, k) => s + self.state.substances[k],
@@ -195,6 +205,40 @@ const createGlass = (
           )
         })
       }
+      if (self.name === "Secondary Glass" && target.name === "Main Glass") {
+        const targetState = target.state as GlassState
+        const subs = Object.keys(self.state.substances)
+        const sourceTotal = subs.reduce(
+          (s, k) => s + self.state.substances[k],
+          0,
+        )
+        const targetTotal = Object.values(targetState.substances).reduce(
+          (a: number, b: number) => a + b,
+          0,
+        )
+        const remaining = Math.max(0, targetState.maxCapacity - targetTotal)
+        const amount = Math.min(sourceTotal, remaining)
+
+        if (amount > 0) {
+          const newTargetTotal = targetTotal + amount
+          targetState.temperatureC =
+            (targetState.temperatureC * targetTotal +
+              self.state.temperatureC * amount) /
+            newTargetTotal
+
+          subs.forEach((k) => {
+            const trans = (self.state.substances[k] / sourceTotal) * amount
+            targetState.substances[k] = (targetState.substances[k] || 0) + trans
+            self.state.substances[k] = Math.max(
+              0,
+              self.state.substances[k] - trans,
+            )
+          })
+        }
+
+        targetState.hasGlass = true
+        self.state.isHidden = true
+      }
       if (target.kind === "spalatorie") {
         self.state.substances = {}
         self.state.temperatureC = AMBIENT_TEMPERATURE
@@ -202,7 +246,10 @@ const createGlass = (
       }
     },
     (self, target) => {
-      if (target.kind === "glass") {
+      if (self.name === "Secondary Glass" && target.name === "Main Glass") {
+        return (target.state as GlassState).hasGlass ? false : "instant"
+      }
+      if (canReceiveLiquid(target)) {
         const sourceTotal = Object.values(self.state.substances).reduce(
           (s, k) => s + (k as number),
           0,
@@ -260,7 +307,7 @@ export const engine = new Engine([
   createInfiniteSource("NH4OH sol. 10%", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/subst_inf_300.png"),
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
 
-  createGlass("Main Glass", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false),
+  createGlass("Main Glass", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
   createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
   createGlass("Ep1", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
   createGlass("Ep2", 47, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),

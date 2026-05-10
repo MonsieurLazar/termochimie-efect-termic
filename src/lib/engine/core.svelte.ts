@@ -62,6 +62,7 @@ export class Engine {
   }
 
   isItemVisible(item: Item<any>) {
+    if (item.state?.isHidden) return false
     if (item.kind !== "ui-button") return true
     const widget = item.state?.widget as WidgetKey | undefined
     if (!widget) return true
@@ -231,6 +232,7 @@ export class Engine {
         hoveredItem.onClick(hoveredItem, this)
         return
       }
+      if (hoveredItem.name === "Main Glass") return
       this.pickUp(this.hoveredItemIndex)
     } else if (this.engineState === "carrying") {
       this.handleCarriedClick()
