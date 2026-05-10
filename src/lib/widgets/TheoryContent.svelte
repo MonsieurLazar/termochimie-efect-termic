@@ -10,9 +10,9 @@
   Căldurile de reacție la presiune constantă Q<sub>p</sub> = &Delta;H sunt chiar
   entalpiile de reacție. Procesele chimice în care sistemul reactant cedează
   căldura mediului exterior se numesc
-  <span class="highlight">reacții exoterme &Delta;H &lt; O</span>, iar cel în
+  <span class="highlight">reacții exoterme &Delta;H &lt; 0</span>, iar cel în
   care sistemul absoarbe căldura din mediul exterior
-  <span class="highlight">&Delta;H &gt; O se numesc reacții endoterme</span>.
+  <span class="highlight">&Delta;H &gt; 0 se numesc reacții endoterme</span>.
 </p>
 
 <div class="exo-endo-container">
@@ -40,7 +40,7 @@
   Așadar, la neutralizarea acizilor tari cu baze tari în soluție apoasă se produce
   practic reacția de formare a unui mol de apă:
 </p>
-<center class="formula">H<sup>+</sup><sub>aq</sub> + HO<sup>-</sup><sub>aq</sub> -> H<sub>2</sub>O    (1)</center>
+<center class="formula">H<sup>+</sup><sub>aq</sub> + HO<sup>-</sup><sub>aq</sub> &rarr; H<sub>2</sub>O    (1)</center>
 
 <p class="indent_paragraph">
   Aceasta deoarece acizii și bazele tari, fiind electroliți tari, sunt total
@@ -50,7 +50,7 @@
 
 <center class="formula">
   (H<sup>+</sup><sub>(aq)</sub> + Cl<sup>-</sup><sub>(aq)</sub>) +
-  (Na<sup>+</sup><sub>(aq)</sub> + OH<sup>-</sup><sub>(aq)</sub>) ->
+  (Na<sup>+</sup><sub>(aq)</sub> + OH<sup>-</sup><sub>(aq)</sub>) &rarr;
   Na<sup>+</sup><sub>(aq)</sub> + Cl<sup>-</sup><sub>(aq)</sub> + H<sub>2</sub>O
   (2)
 </center>
@@ -75,14 +75,14 @@
 </div>
 
 <p class="indent_paragraph">Concret, vom avea următoarele reacții și substanțe:</p>
-<center class="formula">a) HCl + NaOH -> H<sub>2</sub>O + NaCl    (3)</center>
-<center class="formula">b) H<sub>2</sub>SO<sub>4</sub> + 2NaOH -> 2H<sub>2</sub>O + Na<sub>2</sub>SO<sub>4</sub>    (4)</center>
-<center class="formula">c) HCl + NH<sub>4</sub>OH -> H<sub>2</sub>O + NH<sub>4</sub>Cl    (5)</center>
+<center class="formula">a) HCl + NaOH &rarr; H<sub>2</sub>O + NaCl    (3)</center>
+<center class="formula">b) H<sub>2</sub>SO<sub>4</sub> + 2NaOH &rarr; 2H<sub>2</sub>O + Na<sub>2</sub>SO<sub>4</sub>    (4)</center>
+<center class="formula">c) HCl + NH<sub>4</sub>OH &rarr; H<sub>2</sub>O + NH<sub>4</sub>Cl    (5)</center>
 
 <br />
 <h2><span class="highlight">Aparatură și substanțe</span></h2>
 <p class="indent_paragraph"><b><i>Aparatură:</i></b> calorimetru, cilindri gradați, pahar Berzelius, termometru</p>
-<p class="indent_paragraph"><b><i>Substanțe:</i></b> soluții de HCl 1N, H2SO4 1N, NaOH 0,5N și NH4OH 0,5N</p>
+<p class="indent_paragraph"><b><i>Substanțe:</i></b> soluții de HCl 1N, H<sub>2</sub>SO<sub>4</sub> 1N, NaOH 0,5N și NH<sub>4</sub>OH 0,5N</p>
 <p class="indent_paragraph">
   Aparatul cu ajutorul căruia se măsoară efectele termice ale proceselor chimice și
   fizice în condiții adiabatice, se numește calorimetru. În laboratoarele de chimie
