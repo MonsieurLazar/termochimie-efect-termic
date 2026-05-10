@@ -71,7 +71,7 @@
           : widget === "debug"
             ? 0.75
             : widget === "calculator"
-              ? 1
+              ? 1.25
               : 0.9
     return Math.round(baseWidgetWidthPx * scale)
   }

@@ -155,7 +155,7 @@
         <td><input type="number" bind:value={Vacid1} /></td>
         <td><input type="number" bind:value={Tinitial1} /></td>
         <td><input type="number" bind:value={Tfinal1} /></td>
-        <td>{Tfinal1 - Tinitial1}</td>
+        <td>{(Tfinal1 - Tinitial1).toFixed(1)}</td>
         <td>{((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - Tinitial1)).toFixed(3)}</td>
         <td>{(-1 * ((20 + Vacid1 * 1.06 * 0.931 + 2 * Vacid1 * 1.06 * 0.931) * (Tfinal1 - Tinitial1)) / (Vacid1 / 1000)).toFixed(3)}</td>
       </tr>
@@ -164,7 +164,7 @@
         <td><input type="number" bind:value={Vacid2} /></td>
         <td><input type="number" bind:value={Tinitial2} /></td>
         <td><input type="number" bind:value={Tfinal2} /></td>
-        <td>{Tfinal2 - Tinitial2}</td>
+        <td>{(Tfinal2 - Tinitial2).toFixed(1)}</td>
         <td>{((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - Tinitial2)).toFixed(3)}</td>
         <td>{(-1 * ((20 + Vacid2 * 1.06 * 0.931 + 2 * Vacid2 * 1.06 * 0.931) * (Tfinal2 - Tinitial2)) / (Vacid2 / 1000)).toFixed(3)}</td>
       </tr>
@@ -173,7 +173,7 @@
         <td><input type="number" bind:value={Vacid3} /></td>
         <td><input type="number" bind:value={Tinitial3} /></td>
         <td><input type="number" bind:value={Tfinal3} /></td>
-        <td>{Tfinal3 - Tinitial3}</td>
+        <td>{(Tfinal3 - Tinitial3).toFixed(1)}</td>
         <td>{((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - Tinitial3)).toFixed(3)}</td>
         <td>{(-1 * ((20 + Vacid3 * 1.06 * 0.931 + 2 * Vacid3 * 1.06 * 0.931) * (Tfinal3 - Tinitial3)) / (Vacid3 / 1000)).toFixed(3)}</td>
       </tr>
