@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AMBIENT_TEMPERATURE, engine, getTestTubeValidation, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
+  import { AMBIENT_TEMPERATURE, engine, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -368,13 +368,25 @@
   const testTubeItems = $derived(
     engine.items.filter((item) => ["Eprubeta NaOH", "Eprubeta HCl", "Eprubeta H2SO4", "Eprubeta NH4OH"].includes(item.name)),
   )
-  const testTubeValidations = $derived(
-    testTubeItems.map((item) => ({ item, validation: getTestTubeValidation(item) })),
-  )
-  function isRequirementComplete(tubeName: string, requirement: TestTubeRequirement) {
-    if (!requirement.requiredSubstance || !requirement.requiredVolume) return true
+  function getRequirementValidation(tubeName: string, requirement: TestTubeRequirement) {
+    if (!requirement.requiredSubstance || !requirement.requiredVolume) {
+      return {
+        ...requirement,
+        isComplete: true,
+        isValid: true,
+        message: "Curata si las-o goala pentru acest experiment.",
+      }
+    }
+
     const tube = getItem(tubeName)
-    if (!tube) return false
+    if (!tube) {
+      return {
+        ...requirement,
+        isComplete: false,
+        isValid: false,
+        message: "Eprubeta lipseste.",
+      }
+    }
 
     const substances = tube.state.substances
     const totalAmount = Object.values(substances).reduce(
@@ -387,11 +399,47 @@
         amount > 0.01 && name !== requirement.requiredSubstance && name !== "H2O",
     )
 
-    return (
-      requiredAmount > 0.01 &&
-      !hasForeignSubstances &&
-      Math.abs(totalAmount - requirement.requiredVolume) <= 2
-    )
+    if (hasForeignSubstances) {
+      return {
+        ...requirement,
+        isComplete: false,
+        isValid: false,
+        message: "Substanta gresita. Goleste la Gunoi si reia.",
+      }
+    }
+
+    if (requiredAmount <= 0.01) {
+      return {
+        ...requirement,
+        isComplete: false,
+        isValid: true,
+        message: `Toarna ${requirement.label}.`,
+      }
+    }
+
+    const isValid = Math.abs(totalAmount - requirement.requiredVolume) <= 2
+
+    return {
+      ...requirement,
+      isComplete: isValid,
+      isValid,
+      message: isValid
+        ? `Corect: ${totalAmount.toFixed(1)} ml.`
+        : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Gunoi si reia.`,
+    }
+  }
+
+  const testTubeValidations = $derived(
+    testTubeItems.map((item) => ({
+      item,
+      validation: getRequirementValidation(item.name, currentExperiment.requirements[item.name]),
+    })),
+  )
+
+  function isRequirementComplete(tubeName: string, requirement: TestTubeRequirement) {
+    const validation = getRequirementValidation(tubeName, requirement)
+
+    return validation.isComplete
   }
 
   const areTestTubeReactionsComplete = $derived(
