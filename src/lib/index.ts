@@ -237,7 +237,7 @@ const createGlass = (
       name,
       { widget },
       { x, y },
-      { width: 11, aspectRatio: 1.8 },
+      { width: 22, aspectRatio: 1.8 },
       EngineButtonRenderer as any,
       () => "",
       undefined,
@@ -294,9 +294,8 @@ export const engine = new Engine([
     "/design/300x300/residuu_300.png",
   ),
 
-  createUiButton("Open Theory", 82, 2, "theory"),
-  createUiButton("Open Graph", 82, 16, "graph"),
-  createUiButton("Open Timer", 82, 30, "timer"),
-  createUiButton("Open Calculator", 82, 44, "calculator"),
-  createUiButton("Open Debug", 82, 58, "debug"),
+  createUiButton("Theory", 82, 2, "theory"),
+  createUiButton("Graph", 82, 16, "graph"),
+  createUiButton("Timer", 82, 30, "timer"),
+  createUiButton("Calculator", 82, 44, "calculator"),
 ])

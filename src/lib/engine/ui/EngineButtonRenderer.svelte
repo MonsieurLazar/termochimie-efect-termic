@@ -5,45 +5,45 @@
 </script>
 
 <div class="engine-button" aria-label={item.name}>
-  {item.name}
-
   {#if item.imageUrl}
     <img src={item.imageUrl} alt={item.name} class="item-image" />
-  {:else}
-    <span class="item-text">{item.name}</span>
   {/if}
+
+  <span class="item-text">{item.name}</span>
 </div>
 
 <style>
 .engine-button {
-    /* Setările tale originale rămân neschimbate */
     width: 100%;
     height: 100%;
-    border: 3px solid #23364a;
-    background: #f6e2a9;
-    box-shadow: 3px 3px 0 #7b6850;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
     color: #1a2a3c;
     
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden; 
-    padding: 0.2rem; 
+    gap: 0.15rem;
+    padding: 0.1rem; 
     cursor: pointer;
   }
 
 
   .item-image {
-    width: 100%;
-    height: 100%;
+    width: 72%;
+    height: 72%;
     object-fit: contain; 
     image-rendering: pixelated;
     pointer-events: none;
   }
 
   .item-text {
-    font-size: 0.72rem;
+    font-size: 0.95rem;
     line-height: 1.1;
     text-align: center;
+    font-weight: 700;
   }
 </style>
