@@ -708,6 +708,17 @@
   {/if}
 </aside>
 
+<a 
+  href="https://github.com/MonsieurLazar/termochimie-efect-termic" 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  class="github-floating-icon" 
+  title="Vezi codul sursă pe GitHub"
+>
+  <img src="design/icons/github_icon-pixilart.png" alt="GitHub Project" />
+  <img src="design/icons/github_icon-pixilart_hover.png" class="icon-hover" alt="GitHub Project Hover" />
+</a>
+
 {#if engine.widgetVisibility.graph}
   <div
     id="widget-graph"
@@ -1124,4 +1135,34 @@
     );
     clip-path: polygon(100% 100%, 100% 0, 0 100%);
   }
+
+  .github-floating-icon {
+    position: fixed;
+    bottom: 1rem;
+    right: calc(min(320px, calc(100vw - 2rem)) + 2.2rem);
+    z-index: 1500;
+    
+    width: 48px;
+    height: 48px;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .github-floating-icon img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+  }
+  .icon-hover {
+    opacity: 0;
+  }
+
+  .github-floating-icon:hover .icon-hover {
+    opacity: 1;
+  }
+
 </style>
