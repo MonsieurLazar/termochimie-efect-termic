@@ -25,7 +25,7 @@
 </div>
 
 <br />
-<h1><span class="highlight">Determinarea entalpiei de utilizare</span></h1>
+<h1><span class="highlight">Determinarea entalpiei de neutralizare</span></h1>
 <h2><span class="highlight">Principiul lucrării:</span></h2>
 <p class="indent_paragraph">
   Căldura de neutralizare a unui acid cu o bază reprezintă cantitatea de căldură
@@ -33,7 +33,7 @@
   protoni hidratați H<sub>3</sub>O<sup>+</sup> și un ion gram de grupe hidroxil
   HO<sup>-</sup>. Pentru reacțiile dintre acizii și bazele tari, în soluții
   apoase diluate, entalpia de neutralizare are aceeași valoare, egală cu
-  -13,7 kcal/mol, sau -57,3 kJ/mol la 18<sup>o</sup>C (291 K) și 1 atm,
+  -13,7 kcal/mol, sau -57,3 kJ/mol la 18&deg;C (291 K) și 1 atm,
   indiferent de natura acidului și a bazei.
 </p>
 <p class="indent_paragraph">
@@ -98,14 +98,14 @@
       se introduc în paharul de sticlă al sistemului calorimetric 25 mL soluție de
       HCl 1N și se citește, după aproximativ 3 minute, temperatura acestei soluții
       (t<sub>i</sub>) cu ajutorul unui termometru;
-  </p>
+    </p>
   </li>
   <li>
     <p class="indent_paragraph">
       se adaugă 50 mL NaOH 0,5 N, la aceeași temperatură, peste soluția aflată în
       calorimetru;
     </p>
-</li>
+  </li>
   <li>
     <p class="indent_paragraph">
       din momentul amestecării se urmărește variația temperaturii până când ea devine
