@@ -224,29 +224,34 @@ const createGlass = (
     color
   )
 
-const createUiButton = (
-  name: string,
-  x: number,
-  y: number,
-  widget: "graph" | "timer" | "debug" | "calculator" | "theory",
-) =>
-  new Item<{
-    widget: "graph" | "timer" | "debug" | "calculator" | "theory"
-  }>(
-    "ui-button",
-    name,
-    { widget },
-    { x, y },
-    { width: 11, aspectRatio: 1.8 },
-    EngineButtonRenderer as any,
-    () => "",
-    undefined,
-    undefined,
-    () => false,
-    (_, engine) => {
-      engine.openWidget(widget)
-    },
-  )
+  const createUiButton = (
+    name: string,
+    x: number,
+    y: number,
+    widget: "theory" | "graph" | "timer" | "calculator" | "debug",
+  ) => {
+    const button = new Item<{
+      widget: "graph" | "timer" | "debug" | "calculator" | "theory"
+    }>(
+      "ui-button",
+      name,
+      { widget },
+      { x, y },
+      { width: 11, aspectRatio: 1.8 },
+      EngineButtonRenderer as any,
+      () => "",
+      undefined,
+      undefined,
+      () => false,
+      (_, engine) => {
+        engine.openWidget(widget)
+      },
+    );
+
+    button.imageUrl = `/design/icons/${widget}.png`;
+
+    return button;
+};
 
 export const engine = new Engine([
   createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 0, "#ffbdbd", "/design/300x300/subst_inf_300.png"),
@@ -254,6 +259,7 @@ export const engine = new Engine([
   createInfiniteSource("H2SO4 sol. 10%", { H2SO4_aq: 0.3, H2O: 0.7 }, 15, 0, "#197484","/design/300x300/subst_inf_300.png"),
   createInfiniteSource("NH4OH sol. 10%", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/subst_inf_300.png"),
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
+
   createGlass("Main Glass", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false),
   createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
   createGlass("Ep1", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
@@ -288,9 +294,9 @@ export const engine = new Engine([
     "/design/300x300/residuu_300.png",
   ),
 
-  createUiButton("Open Graph", 82, 2, "graph"),
-  createUiButton("Open Timer", 82, 16, "timer"),
-  createUiButton("Open Debug", 82, 30, "debug"),
+  createUiButton("Open Theory", 82, 2, "theory"),
+  createUiButton("Open Graph", 82, 16, "graph"),
+  createUiButton("Open Timer", 82, 30, "timer"),
   createUiButton("Open Calculator", 82, 44, "calculator"),
-  createUiButton("Open Theory", 82, 58, "theory"),
+  createUiButton("Open Debug", 82, 58, "debug"),
 ])
