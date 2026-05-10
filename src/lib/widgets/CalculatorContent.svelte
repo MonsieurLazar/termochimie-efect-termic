@@ -10,91 +10,91 @@
   let Tinitial3 = $state(25)
 </script>
 
-<h1><strong>Calcule si rezultate</strong></h1>
+<h1><strong>Calcule și rezultate</strong></h1>
 <p><strong>Date cunoscute:</strong></p>
 
 <details>
   <summary><strong>Calorimetrul</strong></summary>
   <div class="initial_values">
-    <div>C<sub>calorimetru</sub> = 20 calorii/grade, unde:</div>
+    <div>C<sub>calorimetru</sub> = 20 calorii/grad, unde:</div>
   </div>
   <div class="secondary_values">
     <div>m<sub>calorimetru</sub> este masa calorimetrului</div>
-    <div>c<sub>calorimetru</sub> este capacitatea calorica a acestuia</div>
+    <div>c<sub>calorimetru</sub> este capacitatea calorică a acestuia</div>
     <div>
-      iar m<sub>calorimetru</sub> * c<sub>calorimetru</sub> reprezinta
-      C<sub>calorimetru</sub>, adica capacitatea calorica a calorimetrului
+      iar m<sub>calorimetru</sub> &middot; c<sub>calorimetru</sub> reprezintă
+      C<sub>calorimetru</sub>, adică capacitatea calorică a calorimetrului
     </div>
   </div>
 </details>
 
 <details>
-  <summary><strong>Solutiile acide</strong></summary>
+  <summary><strong>Soluțiile acide</strong></summary>
   <div class="initial_values">
     <div>
-      m<sub>solutieacida</sub> = V<sub>solutieacida</sub> *
-      &rho;<sub>solutieacida</sub> , unde:
+      m<sub>soluție acidă</sub> = V<sub>soluție acidă</sub> &middot;
+      &rho;<sub>soluție acidă</sub> , unde:
     </div>
   </div>
   <div class="secondary_values">
-    <div>m<sub>solutieacida</sub> este masa solutiei acide</div>
-    <div>V<sub>solutieacida</sub> este volumul solutiei acide</div>
+    <div>m<sub>soluție acidă</sub> este masa soluției acide</div>
+    <div>V<sub>soluție acidă</sub> este volumul soluției acide</div>
     <div>
-      &rho;<sub>solutieacida</sub> este densitatea acesteia si are valoarea 1.06
-      grame/cm<sup>3</sup>
+      &rho;<sub>soluție acidă</sub> este densitatea acesteia și are valoarea 1.06
+      g/cm<sup>3</sup>
     </div>
   </div>
   <div class="secondary_values">
-    <div>c<sub>solutieacida</sub> = 0.931 calorii/grame * grad</div>
+    <div>c<sub>soluție acidă</sub> = 0.931 calorii/g &middot; grad</div>
   </div>
 </details>
 
 <details>
-  <summary><strong>Solutiile bazice</strong></summary>
+  <summary><strong>Soluțiile bazice</strong></summary>
   <div class="initial_values">
     <div>
-      m<sub>solutiebazica</sub> = V<sub>solutiebazica</sub> *
-      &rho;<sub>solutiebazica</sub> , unde:
+      m<sub>soluție bazică</sub> = V<sub>soluție bazică</sub> &middot;
+      &rho;<sub>soluție bazică</sub> , unde:
     </div>
   </div>
   <div class="secondary_values">
-    <div>m<sub>solutiebazica</sub> este masa solutiei bazice</div>
+    <div>m<sub>soluție bazică</sub> este masa soluției bazice</div>
     <div>
-      V<sub>solutiebazica</sub> este volumul solutiei bazice si este de 2 ori mai
-      mare decat cel al solutiei acide
+      V<sub>soluție bazică</sub> este volumul soluției bazice și este de 2 ori mai
+      mare decât cel al soluției acide
     </div>
     <div>
-      &rho;<sub>solutiebazica</sub> este densitatea acesteia si are valoarea 1.06
-      grame/cm<sup>3</sup>
+      &rho;<sub>soluție bazică</sub> este densitatea acesteia și are valoarea 1.06
+      g/cm<sup>3</sup>
     </div>
   </div>
   <div class="secondary_values">
-    <div>c<sub>solutiebazica</sub> = 0.931 calorii/grame * grad</div>
+    <div>c<sub>soluție bazică</sub> = 0.931 calorii/g &middot; grad</div>
   </div>
 </details>
 
 <details>
-  <summary><strong>Numarul de echivalenti</strong></summary>
+  <summary><strong>Numărul de echivalenți</strong></summary>
   <div class="initial_values">
-    <div>n = V<sub>solutieacida</sub> * N<sub>solutieacida</sub> / 1000 , sau</div>
-    <div>n = V<sub>solutiebazica</sub> * N<sub>solutiebazica</sub> / 1000 , unde:</div>
+    <div>n = V<sub>soluție acidă</sub> &middot; N<sub>soluție acidă</sub> / 1000 , sau</div>
+    <div>n = V<sub>soluție bazică</sub> &middot; N<sub>soluție bazică</sub> / 1000 , unde:</div>
   </div>
   <div class="secondary_values">
-    <div>n este numarul de echivalenti de acid sau baza</div>
-    <div>V<sub>solutieacida</sub> este volumul solutiei acide</div>
-    <div>N<sub>solutieacida</sub> este normalitatea acidului</div>
-    <div>V<sub>solutiebazica</sub> este volumul solutiei bazice</div>
-    <div>N<sub>solutiebazica</sub> este normalitatea bazei</div>
+    <div>n este numărul de echivalenți de acid sau bază</div>
+    <div>V<sub>soluție acidă</sub> este volumul soluției acide</div>
+    <div>N<sub>soluție acidă</sub> este normalitatea acidului</div>
+    <div>V<sub>soluție bazică</sub> este volumul soluției bazice</div>
+    <div>N<sub>soluție bazică</sub> este normalitatea bazei</div>
   </div>
 </details>
 
 <details>
-  <summary><strong>Temperatura initiala si finala</strong></summary>
+  <summary><strong>Temperatura inițială și finală</strong></summary>
   <div class="initial_values">
     <div>
-      t<sub>initiala</sub> = 25 C si reprezinta temperatura initiala a solutiilor
+      t<sub>inițială</sub> = 25&deg;C și reprezintă temperatura inițială a soluțiilor
     </div>
-    <div>t<sub>finala</sub> = temperatura masurata dupa amestecarea solutiilor</div>
+    <div>t<sub>finală</sub> = temperatura măsurată după amestecarea soluțiilor</div>
   </div>
 </details>
 
@@ -102,24 +102,24 @@
   <table>
     <thead>
       <tr>
-        <th>Reactia studiata</th>
-        <th>V<sub>solutieacida</sub><br />(mL)</th>
-        <th>t<sub>initiala</sub><br />(C)</th>
-        <th>t<sub>finala</sub><br />(C)</th>
+        <th>Reacția studiată</th>
+        <th>V<sub>soluție acidă</sub><br />(mL)</th>
+        <th>t<sub>inițială</sub><br />(&deg;C)</th>
+        <th>t<sub>finală</sub><br />(&deg;C)</th>
         <th class="has-tooltip">
-          &Delta;t<br />(C)
+          &Delta;t<br />(&deg;C)
           <div class="tooltip">
-            <strong>Variatia de temperatura:</strong><br />
-            &Delta;t = t<sub>finala</sub> - t<sub>initiala</sub>
+            <strong>Variația de temperatură:</strong><br />
+            &Delta;t = t<sub>finală</sub> - t<sub>inițială</sub>
           </div>
         </th>
         <th class="has-tooltip">
           Q<br />(cal)
           <div class="tooltip">
-            <strong>Caldura transferata:</strong><br />
-            Q = (C<sub>calorimetru</sub> + m<sub>solutieacida</sub> *
-            c<sub>solutieacida</sub> + m<sub>solutiebazica</sub>*c<sub>solutiebazica</sub>)
-            * &Delta;t<br />
+            <strong>Căldura transferată:</strong><br />
+            Q = (C<sub>calorimetru</sub> + m<sub>soluție acidă</sub> &middot;
+            c<sub>soluție acidă</sub> + m<sub>soluție bazică</sub> &middot; c<sub>soluție bazică</sub>)
+            &middot; &Delta;t<br />
           </div>
         </th>
         <th class="has-tooltip">
@@ -127,8 +127,8 @@
           <div class="tooltip">
             <strong>Entalpia de neutralizare:</strong><br />
             &Delta;H = -Q / n<br />
-            <small>n = (V<sub>acid</sub> * N<sub>acid</sub>) / 1000 sau</small><br />
-            <small>n = (V<sub>baza</sub> * N<sub>baza</sub>) / 1000</small><br />
+            <small>n = (V<sub>acid</sub> &middot; N<sub>acid</sub>) / 1000 sau</small><br />
+            <small>n = (V<sub>bază</sub> &middot; N<sub>bază</sub>) / 1000</small><br />
           </div>
         </th>
       </tr>
