@@ -263,12 +263,7 @@ export class Engine {
       }
     }
 
-    if (shouldReturnToInitialPosition) {
-      this.returnCarriedItem()
-    } else {
-      this.releaseCarriedItem()
-    }
-
+    this.returnCarriedItem()//nu mai face verificare, le pune inapoi orice ar fi
     this.engineState = "idle"
   }
 
