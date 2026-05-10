@@ -63,9 +63,11 @@
 
   <div class="label-under">
     <div class="name">{item.name}</div>
+    {#if item.name !== "Secondary Glass"}
     <div class="capacity">
       {Object.values(item.state.substances).reduce((a, b) => a + b, 0).toFixed(1)} / {item.state.maxCapacity}
     </div>
+    {/if}
   </div>
 </div>
 

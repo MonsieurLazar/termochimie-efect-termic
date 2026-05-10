@@ -254,9 +254,12 @@ const createGlass = (
 };
 
 export const engine = new Engine([
-  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 4, "#ffbdbd", "/design/300x300/subst_inf_baza_302_440.png"),
-  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.3, H2O: 0.7 }, 2, 32, "#b6ffd0","/design/300x300/subst_inf_acid_302_440.png"),
-  createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 60, "#7accff","/design/300x300/apa_distilata_300.png"),
+  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 0, "#ffbdbd", "/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.3, H2O: 0.7 }, 2, 30, "#b6ffd0","/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("H2SO4 sol. 10%", { H2SO4_aq: 0.3, H2O: 0.7 }, 15, 0, "#197484","/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("NH4OH sol. 10%", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/subst_inf_300.png"),
+  createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
+
   createGlass("Main Glass", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false),
   createGlass("Secondary Glass", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8),
   createGlass("Ep1", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6),
@@ -273,7 +276,7 @@ export const engine = new Engine([
       reactionIntensity: 0,
       maxCapacity: 0,
     },
-    { x: 67, y: 22 },
+    { x: 67, y: 40 },
     spriteDimension("/design/300x300/residuu_300.png", 20),
     undefined,
     () => "",
