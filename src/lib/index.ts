@@ -4,7 +4,7 @@ import GlassRenderer from "./engine/ui/GlassRenderer.svelte"
 import EngineButtonRenderer from "./engine/ui/EngineButtonRenderer.svelte"
 
 export const TRANSFER_RATE = 5 // units per second
-export const AMBIENT_TEMPERATURE = 25
+export const AMBIENT_TEMPERATURE = 21
 export const COOLING_COEFFICIENT = 0.03
 
 export type SubstanceMeta = {
@@ -275,7 +275,7 @@ const createGlass = (
         subs["HCl_aq"] -= reacted
         subs["NaCl_aq"] = (subs["NaCl_aq"] || 0) + reacted
         subs["H2O"] = (subs["H2O"] || 0) + reacted
-        state.temperatureC += reacted * 40
+        state.temperatureC += reacted * 0.52
         reactionOccurred = true
       }
 
@@ -289,7 +289,7 @@ const createGlass = (
         subs["NaOH_aq"] -= reactedBase
         subs["Na2SO4_aq"] = (subs["Na2SO4_aq"] || 0) + reactedAcid
         subs["H2O"] = (subs["H2O"] || 0) + reactedBase
-        state.temperatureC += reactedAcid * 80
+        state.temperatureC += reactedAcid * 0.533
         reactionOccurred = true
       }
 
@@ -301,7 +301,7 @@ const createGlass = (
         subs["NH4OH_aq"] -= reacted
         subs["NH4Cl_aq"] = (subs["NH4Cl_aq"] || 0) + reacted
         subs["H2O"] = (subs["H2O"] || 0) + reacted
-        state.temperatureC += reacted * 28
+        state.temperatureC += reacted * 0.28
         reactionOccurred = true
       }
 

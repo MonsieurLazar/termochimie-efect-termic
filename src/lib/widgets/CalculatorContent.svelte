@@ -1,17 +1,19 @@
 <script lang="ts">
+  import { AMBIENT_TEMPERATURE } from "$lib/index"
+
   let {
     measuredResults = [],
   }: { measuredResults?: { reaction: string; measuredTempC: number }[] } = $props()
 
   let Vacid1 = $state(25)
   let Tfinal1 = $state(0)
-  let Tinitial1 = $state(25)
+  let Tinitial1 = $state(AMBIENT_TEMPERATURE)
   let Vacid2 = $state(25)
   let Tfinal2 = $state(0)
-  let Tinitial2 = $state(25)
+  let Tinitial2 = $state(AMBIENT_TEMPERATURE)
   let Vacid3 = $state(25)
   let Tfinal3 = $state(0)
-  let Tinitial3 = $state(25)
+  let Tinitial3 = $state(AMBIENT_TEMPERATURE)
 
   $effect(() => {
     const hclNaoh = measuredResults.find((result) => result.reaction === "HCl + NaOH")
@@ -106,7 +108,7 @@
   <summary><strong>Temperatura inițială și finală</strong></summary>
   <div class="initial_values">
     <div>
-      t<sub>inițială</sub> = 25&deg;C și reprezintă temperatura inițială a soluțiilor
+      t<sub>inițială</sub> = {AMBIENT_TEMPERATURE}&deg;C și reprezintă temperatura inițială a soluțiilor
     </div>
     <div>t<sub>finală</sub> = temperatura măsurată după amestecarea soluțiilor</div>
   </div>

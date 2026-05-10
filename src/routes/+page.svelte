@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { engine, getTestTubeValidation, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
+  import { AMBIENT_TEMPERATURE, engine, getTestTubeValidation, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -487,7 +487,7 @@
   function resetExperimentVessels() {
     cleanItems.forEach((item) => {
       item.state.substances = {}
-      item.state.temperatureC = 25
+      item.state.temperatureC = AMBIENT_TEMPERATURE
       item.state.reactionIntensity = 0
       item.state.isDirty = false
       item.state.rinseUnits = 0
@@ -495,7 +495,7 @@
 
     const calorimeter = getItem("Calorimetru")
     if (calorimeter) {
-      calorimeter.state.temperatureC = 25
+      calorimeter.state.temperatureC = AMBIENT_TEMPERATURE
       calorimeter.state.reactionIntensity = 0
       calorimeter.state.receivedHClTube = false
       calorimeter.state.receivedNaOHTube = false
@@ -559,7 +559,7 @@
 
     if (guideStep === 6) {
       if (!measuredTemperatureC) {
-        measuredTemperatureC = String(Number(mainGlass?.state?.temperatureC ?? 25).toFixed(1))
+        measuredTemperatureC = String(Number(mainGlass?.state?.temperatureC ?? AMBIENT_TEMPERATURE).toFixed(1))
       }
       submitMeasuredTemperature()
       return
@@ -569,7 +569,7 @@
       const calorimeter = getItem("Calorimetru")
       if (calorimeter) {
         calorimeter.state.substances = {}
-        calorimeter.state.temperatureC = 25
+        calorimeter.state.temperatureC = AMBIENT_TEMPERATURE
         calorimeter.state.reactionIntensity = 0
       }
       return
@@ -579,7 +579,7 @@
   function resetExperimentFlow() {
     cleanItems.forEach((item) => {
       item.state.substances = {}
-      item.state.temperatureC = 25
+      item.state.temperatureC = AMBIENT_TEMPERATURE
       item.state.reactionIntensity = 0
       item.state.isDirty = true
       item.state.rinseUnits = 0
@@ -589,7 +589,7 @@
     const calorimeter = getItem("Calorimetru")
     if (calorimeter) {
       calorimeter.state.substances = {}
-      calorimeter.state.temperatureC = 25
+      calorimeter.state.temperatureC = AMBIENT_TEMPERATURE
       calorimeter.state.reactionIntensity = 0
       calorimeter.state.hasGlass = false
       calorimeter.state.receivedHClTube = false
