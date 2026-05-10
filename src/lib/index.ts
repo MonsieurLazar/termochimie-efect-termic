@@ -19,7 +19,11 @@ export const SUBSTANCES: Record<string, SubstanceMeta> = {//substantele
   H2O: { color: "0, 100, 155", density: 1.0, opacity: 0.6 }, 
   NaOH_aq: { color: "255, 100, 0", density: 1.05, opacity: 0.6 },
   HCl_aq: { color: "100, 255, 0", density: 1.05, opacity: 0.6 },
+  H2SO4_aq: { color: "25, 116, 132", density: 1.08, opacity: 0.6 },
+  NH4OH_aq: { color: "9, 96, 195", density: 1.02, opacity: 0.6 },
   NaCl_aq: { color: "200, 200, 200", density: 1.1, opacity: 0.4 },
+  Na2SO4_aq: { color: "180, 180, 210", density: 1.12, opacity: 0.4 },
+  NH4Cl_aq: { color: "210, 210, 230", density: 1.05, opacity: 0.4 },
   Indicator: { color: "255, 255, 255", density: 0.9, opacity: 0.1 },
 }
 
@@ -35,19 +39,36 @@ export type GlassState = {
   validationErrorShown?: boolean
   receivedHClTube?: boolean
   receivedNaOHTube?: boolean
+  receivedNH4OHTube?: boolean
+  receivedH2SO4Tube?: boolean
 }
 
-export const TEST_TUBE_REQUIREMENTS: Record<
-  string,
-  { requiredSubstance?: string; requiredVolume?: number; label: string }
-> = {
+export type TestTubeRequirement = {
+  requiredSubstance?: string
+  requiredVolume?: number
+  label: string
+}
+
+let testTubeRequirements: Record<string, TestTubeRequirement> = {
   "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
   "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
   "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
 }
 
+export const setTestTubeRequirements = (requirements: Record<string, TestTubeRequirement>) => {
+  testTubeRequirements = requirements
+  isCalorimeterPourUnlocked = false
+}
+
+export const getTestTubeRequirements = () => testTubeRequirements
+
+export const TEST_TUBE_REQUIREMENTS: Record<
+  string,
+  TestTubeRequirement
+> = testTubeRequirements
+
 export const getTestTubeValidation = (item: Item<any>) => {
-  const requirement = TEST_TUBE_REQUIREMENTS[item.name]
+  const requirement = testTubeRequirements[item.name]
   if (!requirement) return null
   if (!requirement.requiredSubstance || !requirement.requiredVolume) {
     return {
@@ -98,7 +119,7 @@ export const getTestTubeValidation = (item: Item<any>) => {
 
 const areTestTubeReactionsComplete = () =>
   engine.items
-    .filter((item) => ["Eprubeta HCl", "Eprubeta NaOH"].includes(item.name))
+    .filter((item) => testTubeRequirements[item.name]?.requiredSubstance)
     .every((item) => getTestTubeValidation(item)?.isComplete)
 
 let isCalorimeterPourUnlocked = false
@@ -258,6 +279,32 @@ const createGlass = (
         reactionOccurred = true
       }
 
+      // Neutralization: H2SO4_aq + 2NaOH_aq -> Na2SO4_aq + 2H2O
+      if (subs["H2SO4_aq"] > 0.01 && subs["NaOH_aq"] > 0.01) {
+        const acidNeededForBase = subs["NaOH_aq"] / 2
+        const rate = 10.0 * dt
+        const reactedAcid = Math.min(subs["H2SO4_aq"], acidNeededForBase, rate)
+        const reactedBase = reactedAcid * 2
+        subs["H2SO4_aq"] -= reactedAcid
+        subs["NaOH_aq"] -= reactedBase
+        subs["Na2SO4_aq"] = (subs["Na2SO4_aq"] || 0) + reactedAcid
+        subs["H2O"] = (subs["H2O"] || 0) + reactedBase
+        state.temperatureC += reactedAcid * 80
+        reactionOccurred = true
+      }
+
+      // Neutralization: HCl_aq + NH4OH_aq -> NH4Cl_aq + H2O
+      if (subs["HCl_aq"] > 0.01 && subs["NH4OH_aq"] > 0.01) {
+        const rate = 10.0 * dt
+        const reacted = Math.min(subs["HCl_aq"], subs["NH4OH_aq"], rate)
+        subs["HCl_aq"] -= reacted
+        subs["NH4OH_aq"] -= reacted
+        subs["NH4Cl_aq"] = (subs["NH4Cl_aq"] || 0) + reacted
+        subs["H2O"] = (subs["H2O"] || 0) + reacted
+        state.temperatureC += reacted * 28
+        reactionOccurred = true
+      }
+
       if (reactionOccurred) {
         state.reactionIntensity = Math.min(1, state.reactionIntensity + 0.2)
       } else {
@@ -303,6 +350,8 @@ const createGlass = (
 
         if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
         if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
+        if (self.name === "Eprubeta NH4OH") targetState.receivedNH4OHTube = true
+        if (self.name === "Eprubeta H2SO4") targetState.receivedH2SO4Tube = true
         return
       }
 
@@ -347,6 +396,8 @@ const createGlass = (
         if (target.name === "Calorimetru") {
           if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
           if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
+          if (self.name === "Eprubeta NH4OH") targetState.receivedNH4OHTube = true
+          if (self.name === "Eprubeta H2SO4") targetState.receivedH2SO4Tube = true
         }
       }
       if (self.name === "Berzelius" && target.name === "Calorimetru") {
@@ -463,9 +514,10 @@ export const engine = new Engine([
 
   createGlass("Calorimetru", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
   createGlass("Berzelius", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8, true, true, true),
-  createGlass("Eprubeta NaOH", 34, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
-  createGlass("Eprubeta HCl", 47, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
-  createGlass("Eprubeta NH4OH", 60, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta NaOH", 32, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta HCl", 40, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta H2SO4", 48, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Eprubeta NH4OH", 56, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
 
 
   new Item<GlassState>(

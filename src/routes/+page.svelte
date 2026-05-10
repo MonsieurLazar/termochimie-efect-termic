@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { engine, getTestTubeValidation, TRANSFER_RATE } from "$lib/index"
+  import { engine, getTestTubeValidation, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -287,7 +287,75 @@
     return "default"
   })
 
-  const cleaningItemNames = ["Berzelius", "Eprubeta NaOH", "Eprubeta HCl", "Eprubeta NH4OH"]
+  let measuredTemperatureC = $state("")
+  let isStagnationSubmitted = $state(false)
+  let hasOpenedTheory = $state(false)
+  let currentExperimentIndex = $state(0)
+  let measuredResults = $state<
+    { reaction: string; measuredTempC: number }[]
+  >([])
+
+  const experiments: {
+    reaction: string
+    requirements: Record<string, TestTubeRequirement>
+    skipSubstances: Record<string, Record<string, number>>
+    pourTubes: string[]
+  }[] = [
+    {
+      reaction: "HCl + NaOH",
+      requirements: {
+        "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Eprubeta H2SO4": { label: "nefolosita in acest pas" },
+        "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+      },
+      skipSubstances: {
+        "Eprubeta HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Eprubeta NaOH": { NaOH_aq: 15, H2O: 35 },
+      },
+      pourTubes: ["Eprubeta HCl", "Eprubeta NaOH"],
+    },
+    {
+      reaction: "H2SO4 + NaOH",
+      requirements: {
+        "Eprubeta HCl": { label: "nefolosita in acest pas" },
+        "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Eprubeta H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
+        "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+      },
+      skipSubstances: {
+        "Eprubeta H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
+        "Eprubeta NaOH": { NaOH_aq: 15, H2O: 35 },
+      },
+      pourTubes: ["Eprubeta H2SO4", "Eprubeta NaOH"],
+    },
+    {
+      reaction: "HCl + NH4OH",
+      requirements: {
+        "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Eprubeta NaOH": { label: "nefolosita in acest pas" },
+        "Eprubeta H2SO4": { label: "nefolosita in acest pas" },
+        "Eprubeta NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
+      },
+      skipSubstances: {
+        "Eprubeta HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Eprubeta NH4OH": { NH4OH_aq: 15, H2O: 35 },
+      },
+      pourTubes: ["Eprubeta HCl", "Eprubeta NH4OH"],
+    },
+  ]
+
+  const currentExperiment = $derived(experiments[currentExperimentIndex])
+
+  $effect(() => {
+    setTestTubeRequirements(currentExperiment.requirements)
+  })
+
+  $effect(() => {
+    if (engine.widgetVisibility.theory) hasOpenedTheory = true
+  })
+
+  const cleaningItemNames = ["Berzelius", "Eprubeta NaOH", "Eprubeta HCl", "Eprubeta H2SO4", "Eprubeta NH4OH"]
   const cleanItems = $derived(
     engine.items.filter((item) => cleaningItemNames.includes(item.name)),
   )
@@ -298,24 +366,66 @@
   const mainGlass = $derived(engine.items.find((item) => item.name === "Calorimetru"))
   const hasSecondaryGlassInMain = $derived(mainGlass?.state?.hasGlass === true)
   const testTubeItems = $derived(
-    engine.items.filter((item) => ["Eprubeta NaOH", "Eprubeta HCl", "Eprubeta NH4OH"].includes(item.name)),
+    engine.items.filter((item) => ["Eprubeta NaOH", "Eprubeta HCl", "Eprubeta H2SO4", "Eprubeta NH4OH"].includes(item.name)),
   )
   const testTubeValidations = $derived(
     testTubeItems.map((item) => ({ item, validation: getTestTubeValidation(item) })),
   )
+  function isRequirementComplete(tubeName: string, requirement: TestTubeRequirement) {
+    if (!requirement.requiredSubstance || !requirement.requiredVolume) return true
+    const tube = getItem(tubeName)
+    if (!tube) return false
+
+    const substances = tube.state.substances
+    const totalAmount = Object.values(substances).reduce(
+      (sum: number, amount: number) => sum + amount,
+      0,
+    )
+    const requiredAmount = substances[requirement.requiredSubstance] || 0
+    const hasForeignSubstances = Object.entries(substances).some(
+      ([name, amount]) =>
+        amount > 0.01 && name !== requirement.requiredSubstance && name !== "H2O",
+    )
+
+    return (
+      requiredAmount > 0.01 &&
+      !hasForeignSubstances &&
+      Math.abs(totalAmount - requirement.requiredVolume) <= 2
+    )
+  }
+
   const areTestTubeReactionsComplete = $derived(
-    testTubeValidations
-      .filter(({ item }) => ["Eprubeta NaOH", "Eprubeta HCl"].includes(item.name))
-      .every(({ validation }) => validation?.isComplete),
+    Object.entries(currentExperiment.requirements)
+      .filter(([, requirement]) => requirement.requiredSubstance)
+      .every(([tubeName, requirement]) => isRequirementComplete(tubeName, requirement)),
   )
   const isGraphStepComplete = $derived(engine.widgetVisibility.graph)
   const isCalorimeterPourComplete = $derived(
-    mainGlass?.state?.receivedHClTube === true && mainGlass?.state?.receivedNaOHTube === true,
+    currentExperiment.pourTubes.every((tubeName) => {
+      if (tubeName === "Eprubeta HCl") return mainGlass?.state?.receivedHClTube === true
+      if (tubeName === "Eprubeta NaOH") return mainGlass?.state?.receivedNaOHTube === true
+      if (tubeName === "Eprubeta H2SO4") return mainGlass?.state?.receivedH2SO4Tube === true
+      if (tubeName === "Eprubeta NH4OH") return mainGlass?.state?.receivedNH4OHTube === true
+      return false
+    }),
   )
-  let guideStep = $state(1)
+  const isCalorimeterEmpty = $derived(
+    Object.values(mainGlass?.state?.substances || {}).reduce<number>(
+      (sum: number, amount: number) => sum + amount,
+      0,
+    ) <= 0.01,
+  )
+  let guideStep = $state(0)
+  const displayedGuideStep = $derived.by(() => {
+    if (guideStep <= 2) return guideStep
+    if (guideStep === 8) return 3 + experiments.length * 5
+    return 3 + currentExperimentIndex * 5 + (guideStep - 3)
+  })
 
   $effect(() => {
-    if (guideStep === 1 && isCleaningStepComplete) {
+    if (guideStep === 0 && hasOpenedTheory) {
+      guideStep = 1
+    } else if (guideStep === 1 && isCleaningStepComplete) {
       guideStep = 2
     } else if (guideStep === 2 && hasSecondaryGlassInMain) {
       guideStep = 3
@@ -325,6 +435,14 @@
       guideStep = 5
     } else if (guideStep === 5 && isCalorimeterPourComplete) {
       guideStep = 6
+    } else if (guideStep === 7 && isCalorimeterEmpty) {
+      if (currentExperimentIndex < experiments.length - 1) {
+        currentExperimentIndex += 1
+        resetExperimentVessels()
+        guideStep = 3
+      } else {
+        guideStep = 8
+      }
     }
   })
 
@@ -362,9 +480,43 @@
 
     if (sourceName === "Eprubeta HCl") calorimeter.state.receivedHClTube = true
     if (sourceName === "Eprubeta NaOH") calorimeter.state.receivedNaOHTube = true
+    if (sourceName === "Eprubeta H2SO4") calorimeter.state.receivedH2SO4Tube = true
+    if (sourceName === "Eprubeta NH4OH") calorimeter.state.receivedNH4OHTube = true
+  }
+
+  function resetExperimentVessels() {
+    cleanItems.forEach((item) => {
+      item.state.substances = {}
+      item.state.temperatureC = 25
+      item.state.reactionIntensity = 0
+      item.state.isDirty = false
+      item.state.rinseUnits = 0
+    })
+
+    const calorimeter = getItem("Calorimetru")
+    if (calorimeter) {
+      calorimeter.state.temperatureC = 25
+      calorimeter.state.reactionIntensity = 0
+      calorimeter.state.receivedHClTube = false
+      calorimeter.state.receivedNaOHTube = false
+      calorimeter.state.receivedH2SO4Tube = false
+      calorimeter.state.receivedNH4OHTube = false
+      calorimeter.state.hasGlass = true
+    }
+
+    measuredTemperatureC = ""
+    isStagnationSubmitted = false
+    engine.closeWidget("graph")
   }
 
   function skipGuideStep() {
+    if (guideStep === 0) {
+      hasOpenedTheory = true
+      engine.openWidget("theory")
+      guideStep = 1
+      return
+    }
+
     if (guideStep === 1) {
       cleanItems.forEach((item) => {
         item.state.substances = {}
@@ -385,10 +537,10 @@
     }
 
     if (guideStep === 3) {
-      const hclTube = getItem("Eprubeta HCl")
-      const naohTube = getItem("Eprubeta NaOH")
-      if (hclTube) hclTube.state.substances = { HCl_aq: 7.5, H2O: 17.5 }
-      if (naohTube) naohTube.state.substances = { NaOH_aq: 15, H2O: 35 }
+      Object.entries(currentExperiment.skipSubstances).forEach(([tubeName, substances]) => {
+        const tube = getItem(tubeName)
+        if (tube) tube.state.substances = { ...substances }
+      })
       guideStep = 4
       return
     }
@@ -400,11 +552,70 @@
     }
 
     if (guideStep === 5) {
-      emptyIntoCalorimeter("Eprubeta HCl")
-      emptyIntoCalorimeter("Eprubeta NaOH")
+      currentExperiment.pourTubes.forEach((tubeName) => emptyIntoCalorimeter(tubeName))
       guideStep = 6
       return
     }
+
+    if (guideStep === 6) {
+      if (!measuredTemperatureC) {
+        measuredTemperatureC = String(Number(mainGlass?.state?.temperatureC ?? 25).toFixed(1))
+      }
+      submitMeasuredTemperature()
+      return
+    }
+
+    if (guideStep === 7) {
+      const calorimeter = getItem("Calorimetru")
+      if (calorimeter) {
+        calorimeter.state.substances = {}
+        calorimeter.state.temperatureC = 25
+        calorimeter.state.reactionIntensity = 0
+      }
+      return
+    }
+  }
+
+  function resetExperimentFlow() {
+    cleanItems.forEach((item) => {
+      item.state.substances = {}
+      item.state.temperatureC = 25
+      item.state.reactionIntensity = 0
+      item.state.isDirty = true
+      item.state.rinseUnits = 0
+      item.state.isHidden = false
+    })
+
+    const calorimeter = getItem("Calorimetru")
+    if (calorimeter) {
+      calorimeter.state.substances = {}
+      calorimeter.state.temperatureC = 25
+      calorimeter.state.reactionIntensity = 0
+      calorimeter.state.hasGlass = false
+      calorimeter.state.receivedHClTube = false
+      calorimeter.state.receivedNaOHTube = false
+      calorimeter.state.receivedH2SO4Tube = false
+      calorimeter.state.receivedNH4OHTube = false
+    }
+
+    measuredTemperatureC = ""
+    isStagnationSubmitted = false
+    hasOpenedTheory = false
+    currentExperimentIndex = 0
+    measuredResults = []
+    engine.closeWidget("graph")
+    guideStep = 0
+  }
+
+  function submitMeasuredTemperature() {
+    const measuredTempC = Number(measuredTemperatureC)
+    if (!Number.isFinite(measuredTempC)) return
+    measuredResults = [
+      ...measuredResults,
+      { reaction: currentExperiment.reaction, measuredTempC },
+    ]
+    isStagnationSubmitted = true
+    guideStep = 7
   }
 </script>
 
@@ -433,8 +644,17 @@
 
 <aside class="experiment-guide" aria-label="Experiment guide">
   <div class="guide-title">Ghid experiment</div>
-  <div class="guide-step">Pas {guideStep}</div>
-  {#if guideStep === 1}
+  <div class="guide-step-row">
+    <div class="guide-step">Pas {displayedGuideStep}</div>
+    {#if guideStep < 8}
+      <button type="button" class="guide-skip" onclick={skipGuideStep}>Skip pas</button>
+    {:else}
+      <button type="button" class="guide-skip" onclick={resetExperimentFlow}>Reseteaza</button>
+    {/if}
+  </div>
+  {#if guideStep === 0}
+    <p>Deschide Teorie si citeste instructiunile inainte de experiment.</p>
+  {:else if guideStep === 1}
     <p>Toarna 10-15 unitati de apa distilata in fiecare vas murdar, apoi goleste-l la Gunoi.</p>
     <div class="guide-list">
       {#each cleanItems as item}
@@ -446,7 +666,7 @@
   {:else if guideStep === 2}
     <p>Vasele sunt curate. Pune Berzelius in Calorimetru.</p>
   {:else if guideStep === 3}
-    <p>Toarna 25 ml HCl in Eprubeta HCl si 50 ml NaOH in Eprubeta NaOH. Daca ai gresit substanta sau cantitatea, goleste eprubeta la Gunoi.</p>
+    <p>{currentExperiment.reaction}: pregateste eprubetele indicate. Daca ai gresit substanta sau cantitatea, goleste eprubeta la Gunoi.</p>
     <div class="guide-list">
       {#each testTubeValidations as { item, validation }}
         <span class:done={validation?.isComplete} class:error={validation?.isValid === false}>
@@ -457,16 +677,34 @@
   {:else if guideStep === 4}
     <p>Deschide widgetul Temperatura pentru grafic.</p>
   {:else if guideStep === 5}
-    <p>Toarna Eprubeta HCl si Eprubeta NaOH in Calorimetru, apoi urmareste temperatura.</p>
+    <p>Toarna eprubetele pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
     <div class="guide-list">
-      <span class:done={mainGlass?.state?.receivedHClTube}>Eprubeta HCl turnata</span>
-      <span class:done={mainGlass?.state?.receivedNaOHTube}>Eprubeta NaOH turnata</span>
+      {#each currentExperiment.pourTubes as tubeName}
+        <span class:done={tubeName === "Eprubeta HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Eprubeta NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Eprubeta H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnata</span>
+      {/each}
     </div>
+  {:else if guideStep === 6}
+    <p>Citeste din grafic temperatura la saltul initial si introdu valoarea masurata.</p>
+    <label class="guide-field">
+      Temperatura masurata (°C)
+      <input
+        type="number"
+        step="0.1"
+        bind:value={measuredTemperatureC}
+        placeholder="ex: 31.4"
+      />
+    </label>
+    <button type="button" class="guide-submit" onclick={submitMeasuredTemperature}>Submit</button>
+  {:else if guideStep === 7}
+    <p>Goleste Calorimetrul cu Berzelius la Gunoi. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
   {:else}
-    <p>Deschide widgetul Ceas si foloseste modul de viteza pentru a urmari stabilizarea temperaturii.</p>
-  {/if}
-  {#if guideStep < 6}
-    <button type="button" class="guide-skip" onclick={skipGuideStep}>Skip pas</button>
+    <p>Experimente finalizate. Valori masurate:</p>
+    <div class="guide-list">
+      {#each measuredResults as result}
+        <span class="done">{result.reaction}: {result.measuredTempC.toFixed(1)}°C</span>
+      {/each}
+    </div>
+    <p>Deschide Calculator si verifica rezultatele calculate cu temperaturile masurate.</p>
   {/if}
 </aside>
 
@@ -611,7 +849,7 @@
       >
     </div>
     <div class="external-widget-content widget-body" style:height={`${widgetSize.calculator.height}px`}>
-      <CalculatorContent />
+      <CalculatorContent {measuredResults} />
     </div>
     <button class="resize-handle resize-left" aria-label="Resize from bottom left" onmousedown={(event) => startResize("calculator", "left", event)}></button>
     <button class="resize-handle resize-right" aria-label="Resize from bottom right" onmousedown={(event) => startResize("calculator", "right", event)}></button>
@@ -703,12 +941,18 @@
     margin-bottom: 0.25rem;
   }
 
+  .guide-step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+
   .guide-step {
     display: inline-block;
     border: 2px solid #23364a;
     background: #d7e7f4;
     padding: 0.15rem 0.45rem;
-    margin-bottom: 0.5rem;
   }
 
   .experiment-guide p {
@@ -736,7 +980,6 @@
   }
 
   .guide-skip {
-    margin-top: 0.75rem;
     border: 3px solid #23364a;
     background: #d7e7f4;
     color: #1a2a3c;
@@ -746,7 +989,35 @@
     cursor: pointer;
   }
 
-  .guide-skip:active {
+  .guide-submit {
+    margin-top: 0.55rem;
+    border: 3px solid #23364a;
+    background: #d7e7f4;
+    color: #1a2a3c;
+    box-shadow: 3px 3px 0 #7b6850;
+    padding: 0.35rem 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .guide-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+  }
+
+  .guide-field input {
+    border: 3px solid #23364a;
+    background: #fffdf4;
+    color: #1a2a3c;
+    padding: 0.35rem;
+    font: inherit;
+    font-weight: 700;
+  }
+
+  .guide-skip:active,
+  .guide-submit:active {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px 0 #7b6850;
   }

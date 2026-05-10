@@ -1,4 +1,8 @@
 <script lang="ts">
+  let {
+    measuredResults = [],
+  }: { measuredResults?: { reaction: string; measuredTempC: number }[] } = $props()
+
   let Vacid1 = $state(25)
   let Tfinal1 = $state(0)
   let Tinitial1 = $state(25)
@@ -8,6 +12,16 @@
   let Vacid3 = $state(25)
   let Tfinal3 = $state(0)
   let Tinitial3 = $state(25)
+
+  $effect(() => {
+    const hclNaoh = measuredResults.find((result) => result.reaction === "HCl + NaOH")
+    const h2so4Naoh = measuredResults.find((result) => result.reaction === "H2SO4 + NaOH")
+    const hclNh4oh = measuredResults.find((result) => result.reaction === "HCl + NH4OH")
+
+    if (hclNaoh) Tfinal1 = hclNaoh.measuredTempC
+    if (h2so4Naoh) Tfinal2 = h2so4Naoh.measuredTempC
+    if (hclNh4oh) Tfinal3 = hclNh4oh.measuredTempC
+  })
 </script>
 
 <h1><strong>Calcule și rezultate</strong></h1>
