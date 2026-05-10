@@ -235,7 +235,6 @@ export class Engine {
         hoveredItem.onClick(hoveredItem, this)
         return
       }
-      if (hoveredItem.name === "Calorimetru") return
       this.pickUp(this.hoveredItemIndex)
     } else if (this.engineState === "carrying") {
       this.handleCarriedClick()
