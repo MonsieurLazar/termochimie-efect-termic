@@ -8,9 +8,7 @@ Live: [termochimie.bylazar.com](https://termochimie.bylazar.com)
 
 ## Showcase
 
-<video src="showcase.mp4" controls width="100%"></video>
-
-[Vezi showcase-ul](showcase.mp4)
+[Vezi showcase-ul](https://youtu.be/Ut2aBEKDCWY)
 
 ## Pornire rapida
 
