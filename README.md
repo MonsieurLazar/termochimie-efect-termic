@@ -6,6 +6,12 @@ Un simulator interactiv de termochimie, facut cu SvelteKit, care explica efectul
 
 Live: [termochimie.bylazar.com](https://termochimie.bylazar.com)
 
+## Showcase
+
+<video src="showcase.mp4" controls width="100%"></video>
+
+[Vezi showcase-ul](showcase.mp4)
+
 ## Pornire rapida
 
 ```bash
