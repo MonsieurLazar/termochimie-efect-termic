@@ -50,9 +50,9 @@ export type TestTubeRequirement = {
 }
 
 let testTubeRequirements: Record<string, TestTubeRequirement> = {
-  "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-  "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-  "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+  "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+  "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+  "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
 }
 
 export const setTestTubeRequirements = (requirements: Record<string, TestTubeRequirement>) => {
@@ -91,7 +91,7 @@ export const getTestTubeValidation = (item: Item<any>) => {
       ...requirement,
       isComplete: false,
       isValid: false,
-      message: `Substanta gresita (${foreignSubstances.join(", ")}). Goleste la Gunoi si reia.` ,
+      message: `Substanta gresita (${foreignSubstances.join(", ")}). Goleste la Reziduu si reia.` ,
     }
   }
 
@@ -113,7 +113,7 @@ export const getTestTubeValidation = (item: Item<any>) => {
     isValid,
     message: isValid
       ? `Corect: ${totalAmount.toFixed(1)} ml.`
-      : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Gunoi si reia.`,
+      : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Reziduu si reia.`,
   }
 }
 
@@ -348,10 +348,10 @@ const createGlass = (
           )
         })
 
-        if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
-        if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
-        if (self.name === "Eprubeta NH4OH") targetState.receivedNH4OHTube = true
-        if (self.name === "Eprubeta H2SO4") targetState.receivedH2SO4Tube = true
+        if (self.name === "Cilindru gradat HCl") targetState.receivedHClTube = true
+        if (self.name === "Cilindru gradat NaOH") targetState.receivedNaOHTube = true
+        if (self.name === "Cilindru gradat NH4OH") targetState.receivedNH4OHTube = true
+        if (self.name === "Cilindru gradat H2SO4") targetState.receivedH2SO4Tube = true
         return
       }
 
@@ -394,10 +394,10 @@ const createGlass = (
           )
         })
         if (target.name === "Calorimetru") {
-          if (self.name === "Eprubeta HCl") targetState.receivedHClTube = true
-          if (self.name === "Eprubeta NaOH") targetState.receivedNaOHTube = true
-          if (self.name === "Eprubeta NH4OH") targetState.receivedNH4OHTube = true
-          if (self.name === "Eprubeta H2SO4") targetState.receivedH2SO4Tube = true
+          if (self.name === "Cilindru gradat HCl") targetState.receivedHClTube = true
+          if (self.name === "Cilindru gradat NaOH") targetState.receivedNaOHTube = true
+          if (self.name === "Cilindru gradat NH4OH") targetState.receivedNH4OHTube = true
+          if (self.name === "Cilindru gradat H2SO4") targetState.receivedH2SO4Tube = true
         }
       }
       if (self.name === "Berzelius" && target.name === "Calorimetru") {
@@ -514,15 +514,15 @@ export const engine = new Engine([
 
   createGlass("Calorimetru", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
   createGlass("Berzelius", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8, true, true, true),
-  createGlass("Eprubeta NaOH", 32, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
-  createGlass("Eprubeta HCl", 40, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
-  createGlass("Eprubeta H2SO4", 48, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
-  createGlass("Eprubeta NH4OH", 56, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Cilindru gradat NaOH", 32, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Cilindru gradat HCl", 40, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Cilindru gradat H2SO4", 48, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
+  createGlass("Cilindru gradat NH4OH", 56, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
 
 
   new Item<GlassState>(
     "spalatorie",
-    "Gunoi",
+    "Reziduu",
     {
       substances: {},
       temperatureC: AMBIENT_TEMPERATURE,

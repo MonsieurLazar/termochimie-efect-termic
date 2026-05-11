@@ -304,44 +304,44 @@
     {
       reaction: "HCl + NaOH",
       requirements: {
-        "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-        "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-        "Eprubeta H2SO4": { label: "nefolosita in acest pas" },
-        "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Cilindrul gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Cilindrul gradat H2SO4": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat NH4OH": { label: "nefolosita in acest pas" },
       },
       skipSubstances: {
-        "Eprubeta HCl": { HCl_aq: 7.5, H2O: 17.5 },
-        "Eprubeta NaOH": { NaOH_aq: 15, H2O: 35 },
+        "Cilindrul gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Cilindrul gradat NaOH": { NaOH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Eprubeta HCl", "Eprubeta NaOH"],
+      pourTubes: ["Cilindrul gradat HCl", "Cilindrul gradat NaOH"],
     },
     {
       reaction: "H2SO4 + NaOH",
       requirements: {
-        "Eprubeta HCl": { label: "nefolosita in acest pas" },
-        "Eprubeta NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-        "Eprubeta H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
-        "Eprubeta NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat HCl": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Cilindrul gradat H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
+        "Cilindrul gradat NH4OH": { label: "nefolosita in acest pas" },
       },
       skipSubstances: {
-        "Eprubeta H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
-        "Eprubeta NaOH": { NaOH_aq: 15, H2O: 35 },
+        "Cilindrul gradat H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
+        "Cilindrul gradat NaOH": { NaOH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Eprubeta H2SO4", "Eprubeta NaOH"],
+      pourTubes: ["Cilindrul gradat H2SO4", "Cilindrul gradat NaOH"],
     },
     {
       reaction: "HCl + NH4OH",
       requirements: {
-        "Eprubeta HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-        "Eprubeta NaOH": { label: "nefolosita in acest pas" },
-        "Eprubeta H2SO4": { label: "nefolosita in acest pas" },
-        "Eprubeta NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
+        "Cilindrul gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Cilindrul gradat NaOH": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat H2SO4": { label: "nefolosita in acest pas" },
+        "Cilindrul gradat NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
       },
       skipSubstances: {
-        "Eprubeta HCl": { HCl_aq: 7.5, H2O: 17.5 },
-        "Eprubeta NH4OH": { NH4OH_aq: 15, H2O: 35 },
+        "Cilindrul gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Cilindrul gradat NH4OH": { NH4OH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Eprubeta HCl", "Eprubeta NH4OH"],
+      pourTubes: ["Cilindrul gradat HCl", "Cilindrul gradat NH4OH"],
     },
   ]
 
@@ -355,7 +355,7 @@
     if (engine.widgetVisibility.theory) hasOpenedTheory = true
   })
 
-  const cleaningItemNames = ["Berzelius", "Eprubeta NaOH", "Eprubeta HCl", "Eprubeta H2SO4", "Eprubeta NH4OH"]
+  const cleaningItemNames = ["Berzelius", "Cilindrul gradat NaOH", "Cilindrul gradat HCl", "Cilindrul gradat H2SO4", "Cilindrul gradat NH4OH"]
   const cleanItems = $derived(
     engine.items.filter((item) => cleaningItemNames.includes(item.name)),
   )
@@ -366,7 +366,7 @@
   const mainGlass = $derived(engine.items.find((item) => item.name === "Calorimetru"))
   const hasSecondaryGlassInMain = $derived(mainGlass?.state?.hasGlass === true)
   const testTubeItems = $derived(
-    engine.items.filter((item) => ["Eprubeta NaOH", "Eprubeta HCl", "Eprubeta H2SO4", "Eprubeta NH4OH"].includes(item.name)),
+    engine.items.filter((item) => ["Cilindrul gradat NaOH", "Cilindrul gradat HCl", "Cilindrul gradat H2SO4", "Cilindrul gradat NH4OH"].includes(item.name)),
   )
   function getRequirementValidation(tubeName: string, requirement: TestTubeRequirement) {
     if (!requirement.requiredSubstance || !requirement.requiredVolume) {
@@ -384,7 +384,7 @@
         ...requirement,
         isComplete: false,
         isValid: false,
-        message: "Eprubeta lipseste.",
+        message: "Cilindrul gradat lipseste.",
       }
     }
 
@@ -404,7 +404,7 @@
         ...requirement,
         isComplete: false,
         isValid: false,
-        message: "Substanta gresita. Goleste la Gunoi si reia.",
+        message: "Substanta gresita. Goleste la Reziduu si reia.",
       }
     }
 
@@ -425,7 +425,7 @@
       isValid,
       message: isValid
         ? `Corect: ${totalAmount.toFixed(1)} ml.`
-        : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Gunoi si reia.`,
+        : `Cantitate gresita: ai ${totalAmount.toFixed(1)} ml, trebuie ${requirement.requiredVolume} ml. Goleste la Reziduu si reia.`,
     }
   }
 
@@ -450,10 +450,10 @@
   const isGraphStepComplete = $derived(engine.widgetVisibility.graph)
   const isCalorimeterPourComplete = $derived(
     currentExperiment.pourTubes.every((tubeName) => {
-      if (tubeName === "Eprubeta HCl") return mainGlass?.state?.receivedHClTube === true
-      if (tubeName === "Eprubeta NaOH") return mainGlass?.state?.receivedNaOHTube === true
-      if (tubeName === "Eprubeta H2SO4") return mainGlass?.state?.receivedH2SO4Tube === true
-      if (tubeName === "Eprubeta NH4OH") return mainGlass?.state?.receivedNH4OHTube === true
+      if (tubeName === "Cilindrul gradat HCl") return mainGlass?.state?.receivedHClTube === true
+      if (tubeName === "Cilindrul gradat NaOH") return mainGlass?.state?.receivedNaOHTube === true
+      if (tubeName === "Cilindrul gradat H2SO4") return mainGlass?.state?.receivedH2SO4Tube === true
+      if (tubeName === "Cilindrul gradat NH4OH") return mainGlass?.state?.receivedNH4OHTube === true
       return false
     }),
   )
@@ -526,10 +526,10 @@
     })
     source.state.substances = {}
 
-    if (sourceName === "Eprubeta HCl") calorimeter.state.receivedHClTube = true
-    if (sourceName === "Eprubeta NaOH") calorimeter.state.receivedNaOHTube = true
-    if (sourceName === "Eprubeta H2SO4") calorimeter.state.receivedH2SO4Tube = true
-    if (sourceName === "Eprubeta NH4OH") calorimeter.state.receivedNH4OHTube = true
+    if (sourceName === "Cilindrul gradat HCl") calorimeter.state.receivedHClTube = true
+    if (sourceName === "Cilindrul gradat NaOH") calorimeter.state.receivedNaOHTube = true
+    if (sourceName === "Cilindrul gradat H2SO4") calorimeter.state.receivedH2SO4Tube = true
+    if (sourceName === "Cilindrul gradat NH4OH") calorimeter.state.receivedNH4OHTube = true
   }
 
   function resetExperimentVessels() {
@@ -703,7 +703,7 @@
   {#if guideStep === 0}
     <p>Deschide Teorie si citeste instructiunile inainte de experiment.</p>
   {:else if guideStep === 1}
-    <p>Toarna 10-15 unitati de apa distilata in fiecare vas murdar, apoi goleste-l la Gunoi.</p>
+    <p>Toarna 10-15 unitati de apa distilata in fiecare vas murdar, apoi goleste-l la Reziduu.</p>
     <div class="guide-list">
       {#each cleanItems as item}
         <span class:done={!item.state?.isDirty}>
@@ -714,7 +714,7 @@
   {:else if guideStep === 2}
     <p>Vasele sunt curate. Pune Berzelius in Calorimetru.</p>
   {:else if guideStep === 3}
-    <p>{currentExperiment.reaction}: pregateste eprubetele indicate. Daca ai gresit substanta sau cantitatea, goleste eprubeta la Gunoi.</p>
+    <p>{currentExperiment.reaction}: pregateste cilindrele gradate indicate. Daca ai gresit substanta sau cantitatea, goleste cilindrul gradat la Reziduu.</p>
     <div class="guide-list">
       {#each testTubeValidations as { item, validation }}
         <span class:done={validation?.isComplete} class:error={validation?.isValid === false}>
@@ -725,10 +725,10 @@
   {:else if guideStep === 4}
     <p>Deschide widgetul Temperatura pentru grafic.</p>
   {:else if guideStep === 5}
-    <p>Toarna eprubetele pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
+    <p>Toarna cilindrele gradate pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
     <div class="guide-list">
       {#each currentExperiment.pourTubes as tubeName}
-        <span class:done={tubeName === "Eprubeta HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Eprubeta NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Eprubeta H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnata</span>
+        <span class:done={tubeName === "Cilindrul gradat HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Eprubeta NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Eprubeta H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnat</span>
       {/each}
     </div>
   {:else if guideStep === 6}
@@ -744,7 +744,7 @@
     </label>
     <button type="button" class="guide-submit" onclick={submitMeasuredTemperature}>Submit</button>
   {:else if guideStep === 7}
-    <p>Goleste Calorimetrul cu Berzelius la Gunoi. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
+    <p>Goleste Calorimetrul cu Berzelius la Reziduu. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
   {:else}
     <p>Experimente finalizate. Valori masurate:</p>
     <div class="guide-list">
