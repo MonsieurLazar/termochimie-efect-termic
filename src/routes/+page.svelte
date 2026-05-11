@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AMBIENT_TEMPERATURE, engine, setTestTubeRequirements, TRANSFER_RATE, type TestTubeRequirement } from "$lib/index"
+  import { AMBIENT_TEMPERATURE, engine, setTestTubeRequirements, TRANSFER_RATE, type GlassState, type TestTubeRequirement } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -304,44 +304,44 @@
     {
       reaction: "HCl + NaOH",
       requirements: {
-        "Cilindrul gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-        "Cilindrul gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-        "Cilindrul gradat H2SO4": { label: "nefolosita in acest pas" },
-        "Cilindrul gradat NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Cilindru gradat H2SO4": { label: "nefolosita in acest pas" },
+        "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
       },
       skipSubstances: {
-        "Cilindrul gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
-        "Cilindrul gradat NaOH": { NaOH_aq: 15, H2O: 35 },
+        "Cilindru gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Cilindru gradat NaOH": { NaOH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Cilindrul gradat HCl", "Cilindrul gradat NaOH"],
+      pourTubes: ["Cilindru gradat HCl", "Cilindru gradat NaOH"],
     },
     {
       reaction: "H2SO4 + NaOH",
       requirements: {
-        "Cilindrul gradat HCl": { label: "nefolosita in acest pas" },
-        "Cilindrul gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-        "Cilindrul gradat H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
-        "Cilindrul gradat NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindru gradat HCl": { label: "nefolosita in acest pas" },
+        "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
+        "Cilindru gradat H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
+        "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
       },
       skipSubstances: {
-        "Cilindrul gradat H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
-        "Cilindrul gradat NaOH": { NaOH_aq: 15, H2O: 35 },
+        "Cilindru gradat H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
+        "Cilindru gradat NaOH": { NaOH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Cilindrul gradat H2SO4", "Cilindrul gradat NaOH"],
+      pourTubes: ["Cilindru gradat H2SO4", "Cilindru gradat NaOH"],
     },
     {
       reaction: "HCl + NH4OH",
       requirements: {
-        "Cilindrul gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-        "Cilindrul gradat NaOH": { label: "nefolosita in acest pas" },
-        "Cilindrul gradat H2SO4": { label: "nefolosita in acest pas" },
-        "Cilindrul gradat NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
+        "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
+        "Cilindru gradat NaOH": { label: "nefolosita in acest pas" },
+        "Cilindru gradat H2SO4": { label: "nefolosita in acest pas" },
+        "Cilindru gradat NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
       },
       skipSubstances: {
-        "Cilindrul gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
-        "Cilindrul gradat NH4OH": { NH4OH_aq: 15, H2O: 35 },
+        "Cilindru gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
+        "Cilindru gradat NH4OH": { NH4OH_aq: 15, H2O: 35 },
       },
-      pourTubes: ["Cilindrul gradat HCl", "Cilindrul gradat NH4OH"],
+      pourTubes: ["Cilindru gradat HCl", "Cilindru gradat NH4OH"],
     },
   ]
 
@@ -355,7 +355,7 @@
     if (engine.widgetVisibility.theory) hasOpenedTheory = true
   })
 
-  const cleaningItemNames = ["Berzelius", "Cilindrul gradat NaOH", "Cilindrul gradat HCl", "Cilindrul gradat H2SO4", "Cilindrul gradat NH4OH"]
+  const cleaningItemNames = ["Berzelius", "Cilindru gradat NaOH", "Cilindru gradat HCl", "Cilindru gradat H2SO4", "Cilindru gradat NH4OH"]
   const cleanItems = $derived(
     engine.items.filter((item) => cleaningItemNames.includes(item.name)),
   )
@@ -366,7 +366,7 @@
   const mainGlass = $derived(engine.items.find((item) => item.name === "Calorimetru"))
   const hasSecondaryGlassInMain = $derived(mainGlass?.state?.hasGlass === true)
   const testTubeItems = $derived(
-    engine.items.filter((item) => ["Cilindrul gradat NaOH", "Cilindrul gradat HCl", "Cilindrul gradat H2SO4", "Cilindrul gradat NH4OH"].includes(item.name)),
+    engine.items.filter((item) => ["Cilindru gradat NaOH", "Cilindru gradat HCl", "Cilindru gradat H2SO4", "Cilindru gradat NH4OH"].includes(item.name)),
   )
   function getRequirementValidation(tubeName: string, requirement: TestTubeRequirement) {
     if (!requirement.requiredSubstance || !requirement.requiredVolume) {
@@ -388,7 +388,7 @@
       }
     }
 
-    const substances = tube.state.substances
+    const substances = (tube.state as GlassState).substances
     const totalAmount = Object.values(substances).reduce(
       (sum: number, amount: number) => sum + amount,
       0,
@@ -450,15 +450,15 @@
   const isGraphStepComplete = $derived(engine.widgetVisibility.graph)
   const isCalorimeterPourComplete = $derived(
     currentExperiment.pourTubes.every((tubeName) => {
-      if (tubeName === "Cilindrul gradat HCl") return mainGlass?.state?.receivedHClTube === true
-      if (tubeName === "Cilindrul gradat NaOH") return mainGlass?.state?.receivedNaOHTube === true
-      if (tubeName === "Cilindrul gradat H2SO4") return mainGlass?.state?.receivedH2SO4Tube === true
-      if (tubeName === "Cilindrul gradat NH4OH") return mainGlass?.state?.receivedNH4OHTube === true
+      if (tubeName === "Cilindru gradat HCl") return mainGlass?.state?.receivedHClTube === true
+      if (tubeName === "Cilindru gradat NaOH") return mainGlass?.state?.receivedNaOHTube === true
+      if (tubeName === "Cilindru gradat H2SO4") return mainGlass?.state?.receivedH2SO4Tube === true
+      if (tubeName === "Cilindru gradat NH4OH") return mainGlass?.state?.receivedNH4OHTube === true
       return false
     }),
   )
   const isCalorimeterEmpty = $derived(
-    Object.values(mainGlass?.state?.substances || {}).reduce<number>(
+    Object.values((mainGlass?.state as GlassState | undefined)?.substances || {}).reduce<number>(
       (sum: number, amount: number) => sum + amount,
       0,
     ) <= 0.01,
@@ -503,33 +503,35 @@
     const calorimeter = getItem("Calorimetru")
     if (!source || !calorimeter) return
 
-    const sourceTotal = Object.values(source.state.substances).reduce(
+    const sourceState = source.state as GlassState
+    const calorimeterState = calorimeter.state as GlassState
+    const sourceTotal = Object.values(sourceState.substances).reduce(
       (sum: number, amount: number) => sum + amount,
       0,
     )
     if (sourceTotal <= 0) return
 
-    const targetTotal = Object.values(calorimeter.state.substances).reduce(
+    const targetTotal = Object.values(calorimeterState.substances).reduce(
       (sum: number, amount: number) => sum + amount,
       0,
     )
     const newTargetTotal = targetTotal + sourceTotal
 
-    calorimeter.state.temperatureC =
-      (calorimeter.state.temperatureC * targetTotal +
-        source.state.temperatureC * sourceTotal) /
+    calorimeterState.temperatureC =
+      (calorimeterState.temperatureC * targetTotal +
+        sourceState.temperatureC * sourceTotal) /
       newTargetTotal
 
-    Object.entries(source.state.substances).forEach(([name, amount]) => {
-      calorimeter.state.substances[name] =
-        (calorimeter.state.substances[name] || 0) + amount
+    Object.entries(sourceState.substances).forEach(([name, amount]) => {
+      calorimeterState.substances[name] =
+        (calorimeterState.substances[name] || 0) + amount
     })
-    source.state.substances = {}
+    sourceState.substances = {}
 
-    if (sourceName === "Cilindrul gradat HCl") calorimeter.state.receivedHClTube = true
-    if (sourceName === "Cilindrul gradat NaOH") calorimeter.state.receivedNaOHTube = true
-    if (sourceName === "Cilindrul gradat H2SO4") calorimeter.state.receivedH2SO4Tube = true
-    if (sourceName === "Cilindrul gradat NH4OH") calorimeter.state.receivedNH4OHTube = true
+    if (sourceName === "Cilindru gradat HCl") calorimeterState.receivedHClTube = true
+    if (sourceName === "Cilindru gradat NaOH") calorimeterState.receivedNaOHTube = true
+    if (sourceName === "Cilindru gradat H2SO4") calorimeterState.receivedH2SO4Tube = true
+    if (sourceName === "Cilindru gradat NH4OH") calorimeterState.receivedNH4OHTube = true
   }
 
   function resetExperimentVessels() {
@@ -728,7 +730,7 @@
     <p>Toarna cilindrele gradate pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
     <div class="guide-list">
       {#each currentExperiment.pourTubes as tubeName}
-        <span class:done={tubeName === "Cilindrul gradat HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Eprubeta NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Eprubeta H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnat</span>
+        <span class:done={tubeName === "Cilindru gradat HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Cilindru gradat NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Cilindru gradat H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnat</span>
       {/each}
     </div>
   {:else if guideStep === 6}
