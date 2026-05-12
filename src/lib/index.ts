@@ -33,6 +33,7 @@ export type GlassState = {
   reactionIntensity: number
   maxCapacity: number
   hasGlass?: boolean
+  hasThermometer?: boolean
   isHidden?: boolean
   isDirty?: boolean
   rinseUnits?: number
@@ -133,24 +134,49 @@ const isCalorimeterReadyForPour = () => {
   return isCalorimeterPourUnlocked
 }
 
+const hasCalorimeterAccessories = (state: GlassState) =>
+  state.hasGlass === true && state.hasThermometer === true
+
 const canReceiveLiquid = (target: Item<any>) => {
   if (target.kind !== "glass") return false
   if ((target.state as GlassState).isDirty) return false
   if (target.name !== "Calorimetru") return true
   if (!isCalorimeterReadyForPour()) return false
-  return (target.state as GlassState).hasGlass === true
+  return hasCalorimeterAccessories(target.state as GlassState)
 }
 
 const SPRITE_SIZE_PX: Record<string, { width: number; height: number }> = {
   "/design/300x300/subst_inf_300.png": { width: 151, height: 220 },
   "/design/300x300/apa_distilata_300.png": { width: 115, height: 280 },
   "/design/300x300/calorimetru_300.png": { width: 121, height: 151 },
+  "/design/300x300/termometru_300.png": { width: 43, height: 253 },
   "/design/300x300/erlenmeyer_300.png": { width: 160, height: 193 },
   "/design/300x300/eprubeta_300.png": { width: 106, height: 286 },
   "/design/300x300/residuu_300.png": { width: 121, height: 199 },
 }
 
 const BASE_SPRITE_PATH = "/design/300x300/calorimetru_300.png"
+type CalorimeterAssetState = "empty" | "thermometer" | "berzelius" | "complete"
+
+const CALORIMETER_SPRITES: Record<CalorimeterAssetState, string> = {
+  empty: "/design/300x300/calorimetru_300.png",
+  thermometer: "/design/300x300/calorimetru_300.png",
+  berzelius: "/design/300x300/calorimetru_300.png",
+  complete: "/design/300x300/calorimetru_300.png",
+}
+
+const getCalorimeterAssetState = (state: GlassState): CalorimeterAssetState => {
+  if (state.hasGlass && state.hasThermometer) return "complete"
+  if (state.hasGlass) return "berzelius"
+  if (state.hasThermometer) return "thermometer"
+  return "empty"
+}
+
+export const updateCalorimeterSprite = (item: Item<any>) => {
+  if (item.name !== "Calorimetru") return
+  item.imageUrl = CALORIMETER_SPRITES[getCalorimeterAssetState(item.state as GlassState)]
+}
+
 const BASE_ENGINE_WIDTH_PERCENT = 8
 const ITEM_SCALE = 0.8
 const PIXEL_TO_PERCENT =
@@ -316,7 +342,7 @@ const createGlass = (
       state.temperatureC += cooldown
     },
     (self, target, _, deltaMs) => {
-      if (target.name === "Calorimetru" && isCalorimeterReadyForPour()) {
+      if (target.name === "Calorimetru" && isCalorimeterReadyForPour() && hasCalorimeterAccessories(target.state as GlassState)) {
         const subs = Object.keys(self.state.substances)
         const sourceTotal = subs.reduce(
           (s, k) => s + self.state.substances[k],
@@ -432,6 +458,7 @@ const createGlass = (
         }
 
         targetState.hasGlass = true
+        updateCalorimeterSprite(target)
         self.state.isHidden = true
       }
       if (target.kind === "spalatorie") {
@@ -449,7 +476,7 @@ const createGlass = (
       if (self.name === "Berzelius" && target.name === "Calorimetru") {
         return (target.state as GlassState).hasGlass ? false : "instant"
       }
-      if (target.name === "Calorimetru" && isCalorimeterReadyForPour()) {
+      if (target.name === "Calorimetru" && isCalorimeterReadyForPour() && hasCalorimeterAccessories(target.state as GlassState)) {
         return Object.values(self.state.substances).some((amount) => amount > 0)
           ? "instant"
           : false
@@ -475,6 +502,33 @@ const createGlass = (
     imageUrl,
     color
   )
+
+  const createThermometer = (x: number, y: number) =>
+    new Item<{
+      isHidden?: boolean
+    }>(
+      "tool",
+      "Termometru",
+      { isHidden: false },
+      { x, y },
+      spriteDimension("/design/300x300/termometru_300.png", 4),
+      undefined,
+      () => "",
+      undefined,
+      (self, target) => {
+        if (target.name !== "Calorimetru") return
+        ;(target.state as GlassState).hasThermometer = true
+        updateCalorimeterSprite(target)
+        self.state.isHidden = true
+      },
+      (_, target) => {
+        if (target.name !== "Calorimetru") return false
+        return (target.state as GlassState).hasThermometer ? false : "instant"
+      },
+      undefined,
+      "/design/300x300/termometru_300.png",
+      ""
+    )
 
   const createUiButton = (
     name: string,
@@ -513,6 +567,7 @@ export const engine = new Engine([
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
 
   createGlass("Calorimetru", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
+  createThermometer(42, 55),
   createGlass("Berzelius", 50, 55, 100, "/design/300x300/erlenmeyer_300.png", "", 8, true, true, true),
   createGlass("Cilindru gradat NaOH", 32, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),
   createGlass("Cilindru gradat HCl", 40, 2, 100, "/design/300x300/eprubeta_300.png", "", 6, true, true, true),

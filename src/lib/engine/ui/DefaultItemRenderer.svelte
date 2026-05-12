@@ -5,8 +5,12 @@
   let { item, engine }: { item: Item<any>; engine: Engine } = $props()
   const imageUrl = $derived(item.getDisplayImageUrl())
   const displayName = $derived(
-    item.name === "Calorimetru" && item.state?.hasGlass
-      ? "Calorimetru cu Berzelius"
+    item.name === "Calorimetru" && item.state?.hasGlass && item.state?.hasThermometer
+      ? "Calorimetru cu Berzelius si Termometru"
+      : item.name === "Calorimetru" && item.state?.hasGlass
+        ? "Calorimetru cu Berzelius"
+        : item.name === "Calorimetru" && item.state?.hasThermometer
+          ? "Calorimetru cu Termometru"
       : item.name,
   )
 </script>

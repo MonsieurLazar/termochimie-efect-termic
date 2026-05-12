@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AMBIENT_TEMPERATURE, engine, setTestTubeRequirements, TRANSFER_RATE, type GlassState, type TestTubeRequirement } from "$lib/index"
+  import { AMBIENT_TEMPERATURE, engine, setTestTubeRequirements, TRANSFER_RATE, updateCalorimeterSprite, type GlassState, type TestTubeRequirement } from "$lib/index"
   import { onMount } from "svelte"
   import EngineDebugPanel from "$lib/engine/ui/EngineDebugPanel.svelte"
   import PourIndicator from "$lib/engine/ui/PourIndicator.svelte"
@@ -365,6 +365,8 @@
   const isCleaningStepComplete = $derived(dirtyCleanItems.length === 0)
   const mainGlass = $derived(engine.items.find((item) => item.name === "Calorimetru"))
   const hasSecondaryGlassInMain = $derived(mainGlass?.state?.hasGlass === true)
+  const hasThermometerInMain = $derived(mainGlass?.state?.hasThermometer === true)
+  const isCalorimeterSetupComplete = $derived(hasSecondaryGlassInMain && hasThermometerInMain)
   const testTubeItems = $derived(
     engine.items.filter((item) => ["Cilindru gradat NaOH", "Cilindru gradat HCl", "Cilindru gradat H2SO4", "Cilindru gradat NH4OH"].includes(item.name)),
   )
@@ -475,7 +477,7 @@
       guideStep = 1
     } else if (guideStep === 1 && isCleaningStepComplete) {
       guideStep = 2
-    } else if (guideStep === 2 && hasSecondaryGlassInMain) {
+    } else if (guideStep === 2 && isCalorimeterSetupComplete) {
       guideStep = 3
     } else if (guideStep === 3 && areTestTubeReactionsComplete) {
       guideStep = 4
@@ -552,6 +554,8 @@
       calorimeter.state.receivedH2SO4Tube = false
       calorimeter.state.receivedNH4OHTube = false
       calorimeter.state.hasGlass = true
+      calorimeter.state.hasThermometer = true
+      updateCalorimeterSprite(calorimeter)
     }
 
     measuredTemperatureC = ""
@@ -579,9 +583,15 @@
 
     if (guideStep === 2) {
       const berzelius = getItem("Berzelius")
+      const thermometer = getItem("Termometru")
       const calorimeter = getItem("Calorimetru")
-      if (calorimeter) calorimeter.state.hasGlass = true
+      if (calorimeter) {
+        calorimeter.state.hasGlass = true
+        calorimeter.state.hasThermometer = true
+        updateCalorimeterSprite(calorimeter)
+      }
       if (berzelius) berzelius.state.isHidden = true
+      if (thermometer) thermometer.state.isHidden = true
       guideStep = 3
       return
     }
@@ -642,11 +652,16 @@
       calorimeter.state.temperatureC = AMBIENT_TEMPERATURE
       calorimeter.state.reactionIntensity = 0
       calorimeter.state.hasGlass = false
+      calorimeter.state.hasThermometer = false
       calorimeter.state.receivedHClTube = false
       calorimeter.state.receivedNaOHTube = false
       calorimeter.state.receivedH2SO4Tube = false
       calorimeter.state.receivedNH4OHTube = false
+      updateCalorimeterSprite(calorimeter)
     }
+
+    const thermometer = getItem("Termometru")
+    if (thermometer) thermometer.state.isHidden = false
 
     measuredTemperatureC = ""
     isStagnationSubmitted = false
@@ -714,7 +729,11 @@
       {/each}
     </div>
   {:else if guideStep === 2}
-    <p>Vasele sunt curate. Pune Berzelius in Calorimetru.</p>
+    <p>Vasele sunt curate. Pune Termometrul si Berzelius in Calorimetru.</p>
+    <div class="guide-list">
+      <span class:done={hasThermometerInMain}>Termometru adaugat</span>
+      <span class:done={hasSecondaryGlassInMain}>Berzelius adaugat</span>
+    </div>
   {:else if guideStep === 3}
     <p>{currentExperiment.reaction}: pregateste cilindrele gradate indicate. Daca ai gresit substanta sau cantitatea, goleste cilindrul gradat la Reziduu.</p>
     <div class="guide-list">
