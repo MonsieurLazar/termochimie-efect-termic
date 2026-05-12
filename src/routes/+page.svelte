@@ -735,7 +735,7 @@
       <span class:done={hasSecondaryGlassInMain}>Berzelius adaugat</span>
     </div>
   {:else if guideStep === 3}
-    <p>{currentExperiment.reaction}: pregateste cilindrele gradate indicate. Daca ai gresit substanta sau cantitatea, goleste cilindrul gradat la Reziduu.</p>
+    <p>{currentExperiment.reaction}: pregateste cilindrii gradati indicati. Daca ai gresit substanta sau cantitatea, goleste cilindrul gradat la Reziduu.</p>
     <div class="guide-list">
       {#each testTubeValidations as { item, validation }}
         <span class:done={validation?.isComplete} class:error={validation?.isValid === false}>
@@ -746,7 +746,7 @@
   {:else if guideStep === 4}
     <p>Deschide widgetul Temperatura pentru grafic.</p>
   {:else if guideStep === 5}
-    <p>Toarna cilindrele gradate pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
+    <p>Toarna continutul cilindrilor gradati pentru {currentExperiment.reaction} in Calorimetru, apoi urmareste temperatura.</p>
     <div class="guide-list">
       {#each currentExperiment.pourTubes as tubeName}
         <span class:done={tubeName === "Cilindru gradat HCl" ? mainGlass?.state?.receivedHClTube : tubeName === "Cilindru gradat NaOH" ? mainGlass?.state?.receivedNaOHTube : tubeName === "Cilindru gradat H2SO4" ? mainGlass?.state?.receivedH2SO4Tube : mainGlass?.state?.receivedNH4OHTube}>{tubeName} turnat</span>
@@ -767,7 +767,7 @@
   {:else if guideStep === 7}
     <p>Goleste Calorimetrul cu Berzelius la Reziduu. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
   {:else}
-    <p>Experimente finalizate. Valori masurate:</p>
+    <p>Experimentele sunt finalizate. Valorile masurate:</p>
     <div class="guide-list">
       {#each measuredResults as result}
         <span class="done">{result.reaction}: {result.measuredTempC.toFixed(1)}°C</span>
