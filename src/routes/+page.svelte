@@ -306,8 +306,8 @@
       requirements: {
         "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
         "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-        "Cilindru gradat H2SO4": { label: "nefolosita in acest pas" },
-        "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindru gradat H2SO4": { label: "nefolosit in acest pas" },
+        "Cilindru gradat NH4OH": { label: "nefolosit in acest pas" },
       },
       skipSubstances: {
         "Cilindru gradat HCl": { HCl_aq: 7.5, H2O: 17.5 },
@@ -318,10 +318,10 @@
     {
       reaction: "H2SO4 + NaOH",
       requirements: {
-        "Cilindru gradat HCl": { label: "nefolosita in acest pas" },
+        "Cilindru gradat HCl": { label: "nefolosit in acest pas" },
         "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
         "Cilindru gradat H2SO4": { requiredSubstance: "H2SO4_aq", requiredVolume: 25, label: "25 ml H2SO4" },
-        "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
+        "Cilindru gradat NH4OH": { label: "nefolosit in acest pas" },
       },
       skipSubstances: {
         "Cilindru gradat H2SO4": { H2SO4_aq: 7.5, H2O: 17.5 },
@@ -333,8 +333,8 @@
       reaction: "HCl + NH4OH",
       requirements: {
         "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
-        "Cilindru gradat NaOH": { label: "nefolosita in acest pas" },
-        "Cilindru gradat H2SO4": { label: "nefolosita in acest pas" },
+        "Cilindru gradat NaOH": { label: "nefolosit in acest pas" },
+        "Cilindru gradat H2SO4": { label: "nefolosit in acest pas" },
         "Cilindru gradat NH4OH": { requiredSubstance: "NH4OH_aq", requiredVolume: 50, label: "50 ml NH4OH" },
       },
       skipSubstances: {
@@ -376,7 +376,7 @@
         ...requirement,
         isComplete: true,
         isValid: true,
-        message: "Curata si las-o goala pentru acest experiment.",
+        message: "Curata-l si lasa-l gol pentru acest experiment.",
       }
     }
 
@@ -765,7 +765,7 @@
     </label>
     <button type="button" class="guide-submit" onclick={submitMeasuredTemperature}>Submit</button>
   {:else if guideStep === 7}
-    <p>Goleste Calorimetrul cu Berzelius la Reziduu. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
+    <p>Goleste Calorimetrul cu Berzelius si Termometru la Reziduu. Dupa golire, temperatura se reseteaza si trecem la urmatorul experiment.</p>
   {:else}
     <p>Experimentele sunt finalizate. Valorile masurate:</p>
     <div class="guide-list">
