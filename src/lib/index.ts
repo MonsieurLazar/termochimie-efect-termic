@@ -160,9 +160,9 @@ type CalorimeterAssetState = "empty" | "thermometer" | "berzelius" | "complete"
 
 const CALORIMETER_SPRITES: Record<CalorimeterAssetState, string> = {
   empty: "/design/300x300/calorimetru_300.png",
-  thermometer: "/design/300x300/calorimetru_300.png",
-  berzelius: "/design/300x300/calorimetru_300.png",
-  complete: "/design/300x300/calorimetru_300.png",
+  thermometer: "/design/300x300/calorimetru_termometru_300_300.png",
+  berzelius: "/design/300x300/calorimetru_berzelius_300_300.png",
+  complete: "/design/300x300/calorimetru_berzelius_termometru_300_300.png",
 }
 
 const getCalorimeterAssetState = (state: GlassState): CalorimeterAssetState => {
