@@ -53,7 +53,7 @@ export type TestTubeRequirement = {
 let testTubeRequirements: Record<string, TestTubeRequirement> = {
   "Cilindru gradat HCl": { requiredSubstance: "HCl_aq", requiredVolume: 25, label: "25 ml HCl" },
   "Cilindru gradat NaOH": { requiredSubstance: "NaOH_aq", requiredVolume: 50, label: "50 ml NaOH" },
-  "Cilindru gradat NH4OH": { label: "nefolosita in acest pas" },
+  "Cilindru gradat NH4OH": { label: "nefolosit in acest pas" },
 }
 
 export const setTestTubeRequirements = (requirements: Record<string, TestTubeRequirement>) => {
@@ -76,7 +76,7 @@ export const getTestTubeValidation = (item: Item<any>) => {
       ...requirement,
       isComplete: true,
       isValid: true,
-      message: "Curata si las-o goala pentru acest experiment.",
+      message: "Curata-l si lasa-l gol pentru acest experiment.",
     }
   }
 
@@ -560,10 +560,10 @@ const createGlass = (
 };
 
 export const engine = new Engine([
-  createInfiniteSource("NaOH sol. 10%", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 0, "#ffbdbd", "/design/300x300/baza_298_436.png"),
-  createInfiniteSource("HCl sol. 10%", { HCl_aq: 0.3, H2O: 0.7 }, 2, 30, "#b6ffd0","/design/300x300/acid_298_436.png"),
-  createInfiniteSource("H2SO4 sol. 10%", { H2SO4_aq: 0.3, H2O: 0.7 }, 15, 0, "#197484","/design/300x300/acid_298_436.png"),
-  createInfiniteSource("NH4OH sol. 10%", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/baza_298_436.png"),
+  createInfiniteSource("NaOH sol. 0.5M", { NaOH_aq: 0.3, H2O: 0.7 }, 2, 0, "#ffbdbd", "/design/300x300/baza_298_436.png"),
+  createInfiniteSource("HCl sol. 1M", { HCl_aq: 0.3, H2O: 0.7 }, 2, 30, "#b6ffd0","/design/300x300/acid_298_436.png"),
+  createInfiniteSource("H2SO4 sol. 1M", { H2SO4_aq: 0.3, H2O: 0.7 }, 15, 0, "#197484","/design/300x300/acid_298_436.png"),
+  createInfiniteSource("NH4OH sol. 0.5M", { NH4OH_aq: 0.3, H2O: 0.7 }, 15, 30, "#0960c3","/design/300x300/baza_298_436.png"),
   createInfiniteSource("Distilled H2O", { H2O: 1 }, 2, 62, "#7accff","/design/300x300/apa_distilata_300.png"),
 
   createGlass("Calorimetru", 30, 52, 150, "/design/300x300/calorimetru_300.png", "", 15, false, false),
